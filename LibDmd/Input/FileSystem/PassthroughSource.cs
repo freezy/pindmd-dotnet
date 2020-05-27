@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Reactive;
 using System.Reactive.Subjects;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using LibDmd.Frame;
 
 namespace LibDmd.Input.FileSystem
 {
@@ -19,24 +18,24 @@ namespace LibDmd.Input.FileSystem
 		private readonly ISubject<Unit> _onResume = new Subject<Unit>();
 		private readonly ISubject<Unit> _onPause = new Subject<Unit>();
 
-		public readonly Subject<DMDFrame> FramesGray2 = new Subject<DMDFrame>();
-		public readonly Subject<DMDFrame> FramesGray4 = new Subject<DMDFrame>();
-		public readonly Subject<DMDFrame> FramesRgb24 = new Subject<DMDFrame>();
+		public readonly Subject<DmdFrame> FramesGray2 = new Subject<DmdFrame>();
+		public readonly Subject<DmdFrame> FramesGray4 = new Subject<DmdFrame>();
+		public readonly Subject<DmdFrame> FramesRgb24 = new Subject<DmdFrame>();
 		public readonly Subject<ColoredFrame> FramesColoredGray2 = new Subject<ColoredFrame>();
 		public readonly Subject<ColoredFrame> FramesColoredGray4 = new Subject<ColoredFrame>();
-		public readonly Subject<BitmapSource> FramesBitmap = new Subject<BitmapSource>();
+		public readonly Subject<BmpFrame> FramesBitmap = new Subject<BmpFrame>();
 
 		public PassthroughSource(string name)
 		{
 			Name = name;
 		}
 
-		public IObservable<DMDFrame> GetGray2Frames()
+		public IObservable<DmdFrame> GetGray2Frames()
 		{
 			return FramesGray2;
 		}
 
-		public IObservable<DMDFrame> GetGray4Frames()
+		public IObservable<DmdFrame> GetGray4Frames()
 		{
 			return FramesGray4;
 		}
@@ -51,12 +50,12 @@ namespace LibDmd.Input.FileSystem
 			return FramesColoredGray4;
 		}
 
-		public IObservable<DMDFrame> GetRgb24Frames()
+		public IObservable<DmdFrame> GetRgb24Frames()
 		{
 			return FramesRgb24;
 		}
 
-		public IObservable<BitmapSource> GetBitmapFrames()
+		public IObservable<BmpFrame> GetBitmapFrames()
 		{
 			return FramesBitmap;
 		}

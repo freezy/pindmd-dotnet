@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reactive;
 using System.Reactive.Subjects;
-using LibDmd.Common;
+using LibDmd.Frame;
 
 namespace LibDmd.Input.PinMame
 {
@@ -15,7 +15,7 @@ namespace LibDmd.Input.PinMame
 
 		public IObservable<Unit> OnResume => _onResume;
 		public IObservable<Unit> OnPause => _onPause;
-		
+
 		private readonly ISubject<Unit> _onResume = new Subject<Unit>();
 		private readonly ISubject<Unit> _onPause = new Subject<Unit>();
 

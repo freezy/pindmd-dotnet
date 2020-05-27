@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Windows.Media;
 using System.Collections.Generic;
 using LibDmd.Common;
+using LibDmd.Frame;
 using NLog;
 
 namespace LibDmd.Converter.Colorize
@@ -26,7 +24,7 @@ namespace LibDmd.Converter.Colorize
 		/// <summary>
 		/// Uif welärä Posizion (i Bytes) d Animazion im Feil gsi isch
 		/// </summary>
-		/// 
+		///
 		/// <remarks>
 		/// Wird aus Index zum Ladä bruicht.
 		/// </remarks>
@@ -98,7 +96,7 @@ namespace LibDmd.Converter.Colorize
 		public uint FollowHash { get; private set; }
 
 		private IObservable<AnimationFrame> _frames;
-		private Action<byte[][]> _currentRender;
+		private Action<Dimensions, byte[][]> _currentRender;
 		private int _lastTick;
 		private int _timer;
 
@@ -135,11 +133,11 @@ namespace LibDmd.Converter.Colorize
 		/// <summary>
 		/// Tuät d Animazion startä.
 		/// </summary>
-		/// 
+		///
 		/// <param name="mode">Dr Modus i welem d Animazion laift (chunnt uifs Mappind druif ah)</param>
 		/// <param name="render">Ä Funktion wo tuät s Buid uisgäh</param>
 		/// <param name="completed">Wird uisgfiärt wenn fertig</param>
-		public void Start(SwitchMode mode, Action<byte[][]> render, Action completed = null)
+		public void Start(SwitchMode mode, Action<Dimensions, byte[][]> render, Action completed = null)
 		{
 			IsRunning = true;
 			SwitchMode = mode;
@@ -163,7 +161,7 @@ namespace LibDmd.Converter.Colorize
 			}
 		}
 
-		private void StartEnhance(Action<byte[][]> render)
+		private void StartEnhance(Action<Dimensions, byte[][]> render)
 		{
 			_lastTick = Environment.TickCount;
 			_timer = 0;
@@ -183,9 +181,9 @@ namespace LibDmd.Converter.Colorize
 			LCMBufferPlanes.ForEach(p => Common.FrameUtil.ClearPlane(p));
 		}
 
-		private void RenderLCM(byte[][] vpmFrame)
+		private void RenderLCM(Dimensions dim, byte[][] vpmFrame)
 		{
-			_currentRender(new[] { vpmFrame[0], vpmFrame[1], LCMBufferPlanes[2], LCMBufferPlanes[3] });
+			_currentRender(dim, new[] { vpmFrame[0], vpmFrame[1], LCMBufferPlanes[2], LCMBufferPlanes[3] });
 		}
 
 		public void DetectFollow(byte[] plane, uint NoMaskCRC, bool Reverse)
@@ -226,7 +224,7 @@ namespace LibDmd.Converter.Colorize
 			}
 		}
 
-		private void StartLCM(Action<byte[][]> render)
+		private void StartLCM(Action<Dimensions, byte[][]> render)
 		{
 			_currentRender = render;
 			LCMBufferPlanes.Clear();
@@ -238,7 +236,7 @@ namespace LibDmd.Converter.Colorize
 			Logger.Debug("[vni][{0}] Started LCM mode, ({1})...", SwitchMode, Name);
 		}
 
-		private void StartReplace(Action<byte[][]> render, Action completed = null)
+		private void StartReplace(Action<Dimensions, byte[][]> render, Action completed = null)
 		{
 			Logger.Debug("[vni][{0}] Starting colored animation of {1} frames ({2})...", SwitchMode, Frames.Length, Name);
 			_lastTick = Environment.TickCount;
@@ -247,7 +245,7 @@ namespace LibDmd.Converter.Colorize
 			InitializeFrame();
 		}
 
-		private void RenderAnimation(byte[][] vpmFrame, Action completed = null)
+		private void RenderAnimation(Dimensions dim, byte[][] vpmFrame, Action completed = null)
 		{
 			if (SwitchMode == SwitchMode.ColorMask || SwitchMode == SwitchMode.Replace || SwitchMode == SwitchMode.MaskedReplace)
 			{
@@ -263,13 +261,13 @@ namespace LibDmd.Converter.Colorize
 			}
 			if (!(SwitchMode == SwitchMode.Follow || SwitchMode == SwitchMode.FollowReplace) || FoundFollowMatch)
 			{
-				OutputFrame(vpmFrame);
+				OutputFrame(dim, vpmFrame);
 			}
 			// Advance frames - when not in LCM, AND
 			// When timer runs out and not in follow modes OR
 			// When in follow modes and a match is detected.
-			if (SwitchMode != SwitchMode.LayeredColorMask && 
-				 ((_timer <= 0 && !(SwitchMode == SwitchMode.Follow || SwitchMode == SwitchMode.FollowReplace)) 
+			if (SwitchMode != SwitchMode.LayeredColorMask &&
+				 ((_timer <= 0 && !(SwitchMode == SwitchMode.Follow || SwitchMode == SwitchMode.FollowReplace))
 				 || ((SwitchMode == SwitchMode.Follow || SwitchMode == SwitchMode.FollowReplace) && FoundFollowMatch)))
 			{
 				_frameIndex++;
@@ -294,13 +292,13 @@ namespace LibDmd.Converter.Colorize
 			}
 		}
 
-		private void OutputFrame(byte[][] vpmFrame)
+		private void OutputFrame(Dimensions dim, byte[][] vpmFrame)
 		{
 			switch (SwitchMode)
 			{
 				case SwitchMode.ColorMask:
 				case SwitchMode.Follow:
-					RenderColorMask(vpmFrame);
+					RenderColorMask(dim, vpmFrame);
 					break;
 				case SwitchMode.FollowReplace:
 				case SwitchMode.Replace:
@@ -324,15 +322,15 @@ namespace LibDmd.Converter.Colorize
 								outplanes[i] = animplanes[i];
 						}
 					}
-					_currentRender(outplanes);
+					_currentRender(dim, outplanes);
 					break;
 				case SwitchMode.LayeredColorMask:
-					RenderLCM(vpmFrame);
+					RenderLCM(dim, vpmFrame);
 					break;
 			}
 		}
 
-		private void RenderColorMask(byte[][] vpmFrame)
+		private void RenderColorMask(Dimensions dim, byte[][] vpmFrame)
 		{
 			if (Frames[_frameIndex].Planes.Count < 4)
 			{
@@ -340,7 +338,7 @@ namespace LibDmd.Converter.Colorize
 			}
 			else
 			{
-				_currentRender(new[] { vpmFrame[0], vpmFrame[1], Frames[_frameIndex].Planes[2].Plane, Frames[_frameIndex].Planes[3].Plane });
+				_currentRender(dim, new[] { vpmFrame[0], vpmFrame[1], Frames[_frameIndex].Planes[2].Plane, Frames[_frameIndex].Planes[3].Plane });
 			}
 		}
 
@@ -351,7 +349,7 @@ namespace LibDmd.Converter.Colorize
 			{
 				// Need the *next* frame's mask and hash
 				if (_frameIndex + 1 < NumFrames)
-				{					
+				{
 					FollowHash = Frames[_frameIndex+1].Hash;
 					FollowMask = Frames[_frameIndex+1].Mask;
 				}
@@ -363,10 +361,10 @@ namespace LibDmd.Converter.Colorize
 			}
 		}
 
-		
-		public void NextFrame(byte[][] planes, Action completed = null)
+
+		public void NextFrame(Dimensions dim, byte[][] planes, Action completed = null)
 		{
-			RenderAnimation(planes, completed);
+			RenderAnimation(dim, planes, completed);
 		}
 
 		public void Stop(string what = "stopped")

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reactive;
 using System.Reactive.Subjects;
-using LibDmd.Common;
+using LibDmd.Frame;
 
 namespace LibDmd.Input.PinMame
 {
@@ -19,7 +19,7 @@ namespace LibDmd.Input.PinMame
 		private readonly ISubject<Unit> _onResume = new Subject<Unit>();
 		private readonly ISubject<Unit> _onPause = new Subject<Unit>();
 
-		private readonly Subject<DMDFrame> _framesGray4 = new Subject<DMDFrame>();
+		private readonly Subject<DmdFrame> _framesGray4 = new Subject<DmdFrame>();
 		private readonly BehaviorSubject<FrameFormat> _lastFrameFormat;
 
 		public VpmGray4Source(BehaviorSubject<FrameFormat> lastFrameFormat)
@@ -27,14 +27,14 @@ namespace LibDmd.Input.PinMame
 			_lastFrameFormat = lastFrameFormat;
 		}
 
-		public void NextFrame(DMDFrame frame)
+		public void NextFrame(DmdFrame frame)
 		{
-			SetDimensions(frame.width, frame.height);
+			SetDimensions(frame.Dimensions);
 			_framesGray4.OnNext(frame);
 			_lastFrameFormat.OnNext(FrameFormat.Gray4);
 		}
 
-		public IObservable<DMDFrame> GetGray4Frames()
+		public IObservable<DmdFrame> GetGray4Frames()
 		{
 			return _framesGray4;
 		}

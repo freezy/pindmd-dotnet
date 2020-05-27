@@ -2,6 +2,7 @@
 using System.Reactive;
 using System.Reactive.Subjects;
 using LibDmd.Common;
+using LibDmd.Frame;
 
 namespace LibDmd.Input.PinMame
 {
@@ -19,7 +20,7 @@ namespace LibDmd.Input.PinMame
 		private readonly ISubject<Unit> _onResume = new Subject<Unit>();
 		private readonly ISubject<Unit> _onPause = new Subject<Unit>();
 
-		private readonly Subject<DMDFrame> _framesRgb24 = new Subject<DMDFrame>();
+		private readonly Subject<DmdFrame> _framesRgb24 = new Subject<DmdFrame>();
 		private byte[] _lastFrame;
 		private readonly BehaviorSubject<FrameFormat> _lastFrameFormat;
 
@@ -28,7 +29,7 @@ namespace LibDmd.Input.PinMame
 			_lastFrameFormat = lastFrameFormat;
 		}
 
-		public void NextFrame(DMDFrame frame)
+		public void NextFrame(DmdFrame frame)
 		{
 			if (_lastFrameFormat.Value == FrameFormat.Rgb24 && _lastFrame != null && FrameUtil.CompareBuffers(frame.Data, 0, _lastFrame, 0, frame.Data.Length)) {
 				// identical frame, drop.
@@ -37,13 +38,13 @@ namespace LibDmd.Input.PinMame
 			if (_lastFrame?.Length != frame.Data.Length) {
 				_lastFrame = new byte[frame.Data.Length];
 			}
-			SetDimensions(frame.width, frame.height);
+			SetDimensions(frame.Dimensions);
 			_framesRgb24.OnNext(frame);
 			Buffer.BlockCopy(frame.Data, 0, _lastFrame, 0, frame.Data.Length);
 			_lastFrameFormat.OnNext(FrameFormat.Rgb24);
 		}
 
-		public IObservable<DMDFrame> GetRgb24Frames()
+		public IObservable<DmdFrame> GetRgb24Frames()
 		{
 			return _framesRgb24;
 		}

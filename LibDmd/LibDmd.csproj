@@ -202,19 +202,26 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AlphaNumericFrame.cs" />
-    <Compile Include="ColoredFrame.cs" />
     <Compile Include="Common\CultureUtil.cs" />
     <Compile Include="DmdDevice\IConfiguration.cs" />
-    <Compile Include="Input\Frame.cs" />
+    <Compile Include="Frame\AlphaNumericFrame.cs" />
+    <Compile Include="Frame\BaseFrame.cs" />
+    <Compile Include="Frame\BmpFrame.cs" />
+    <Compile Include="Frame\ColoredFrame.cs" />
+    <Compile Include="Frame\Dimensions.cs" />
+    <Compile Include="Frame\DmdFrame.cs" />
+    <Compile Include="Frame\RawFrame.cs" />
     <Compile Include="Input\Network\WebsocketColoredGray4Source.cs" />
     <Compile Include="Input\Network\WebsocketColoredGray2Source.cs" />
     <Compile Include="Input\Network\WebsocketGray4Source .cs" />
     <Compile Include="Input\Network\WebsocketRgb24Source.cs" />
     <Compile Include="Input\Network\WebsocketServer.cs" />
     <Compile Include="Input\Network\WebsocketGray2Source.cs" />
+    <Compile Include="Output\IMultiSizeDestination.cs" />
     <Compile Include="Output\Network\NetworkStream.cs" />
     <Compile Include="Output\Network\WebsocketSerializer.cs" />
+    <Compile Include="Output\Pin2Dmd\Pin2Dmd.cs" />
+    <Compile Include="Output\Pin2Dmd\Pin2DmdXL.cs" />
     <Compile Include="Output\Pixelcade\Pixelcade.cs" />
     <Compile Include="Output\Virtual\AlphaNumeric\AlphaNumericLayerSetting.xaml.cs">
       <DependentUpon>AlphaNumericLayerSetting.xaml</DependentUpon>
@@ -318,7 +325,7 @@
     <Compile Include="Output\FileOutput\BitmapOutput.cs" />
     <Compile Include="Output\IGray4Destination.cs" />
     <Compile Include="Output\IRawOutput.cs" />
-    <Compile Include="Output\Pin2Dmd\Pin2Dmd.cs" />
+    <Compile Include="Output\Pin2Dmd\Pin2DmdBase.cs" />
     <Compile Include="Output\PinDmd1\PinDmd1.cs" />
     <Compile Include="Output\PinDmd2\PinDmd2.cs" />
     <Compile Include="Output\Virtual\Dmd\DmdEffect.cs" />
@@ -473,7 +480,6 @@
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

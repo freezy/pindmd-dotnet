@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using LibDmd.Output;
-using NLog;
+using LibDmd.Frame;
 using ResizeMode = LibDmd.Input.ResizeMode;
 
 namespace LibDmd.Common
@@ -19,26 +14,25 @@ namespace LibDmd.Common
 		/// <summary>
 		/// Flips a top-left to bottom-right array of pixels with a given number of bytes per pixel.
 		/// </summary>
-		/// <param name="width">Pixel width</param>
-		/// <param name="height">Pixel height</param>
+		/// <param name="dim">Pixel dimensions</param>
 		/// <param name="bytesPerPixel">How many bytes per pixel</param>
 		/// <param name="frame">Pixel data</param>
 		/// <param name="flipHorizontally">If true, flip horizontally (left/right)</param>
 		/// <param name="flipVertically">If true, flip vertically (top/down)</param>
 		/// <returns></returns>
-		public static byte[] Flip(int width, int height, int bytesPerPixel, byte[] frame, bool flipHorizontally, bool flipVertically)
+		public static byte[] Flip(Dimensions dim, int bytesPerPixel, byte[] frame, bool flipHorizontally, bool flipVertically)
 		{
 			if (!flipHorizontally && !flipVertically) {
 				return frame;
 			}
 			var pos = 0;
 			var flipped = new byte[frame.Length];
-			for (var y = 0; y < height; y++) {
-				for (var x = 0; x < width * bytesPerPixel; x += bytesPerPixel) {
-					var xFlipped = flipHorizontally ? (width - 1) * bytesPerPixel - x : x;
-					var yFlipped = flipVertically ? height - y - 1 : y;
+			for (var y = 0; y < dim.Height; y++) {
+				for (var x = 0; x < dim.Width * bytesPerPixel; x += bytesPerPixel) {
+					var xFlipped = flipHorizontally ? (dim.Width - 1) * bytesPerPixel - x : x;
+					var yFlipped = flipVertically ? dim.Height - y - 1 : y;
 					for (var v = 0; v < bytesPerPixel; v++) {
-						flipped[pos + v] = frame[width * bytesPerPixel * yFlipped + xFlipped + v];
+						flipped[pos + v] = frame[dim.Width * bytesPerPixel * yFlipped + xFlipped + v];
 					}
 					pos += bytesPerPixel;
 				}
@@ -49,13 +43,12 @@ namespace LibDmd.Common
 		/// <summary>
 		/// Flips a given number of bit planes.
 		/// </summary>
-		/// <param name="width">Pixel width</param>
-		/// <param name="height">Pixel height</param>
+		/// <param name="dim">Pixel dimensions</param>
 		/// <param name="planes">Bit planes</param>
 		/// <param name="flipHorizontally">If true, flip horizontally (left/right)</param>
 		/// <param name="flipVertically">If true, flip vertically (top/down)</param>
 		/// <returns></returns>
-		public static byte[][] Flip(int width, int height, byte[][] planes, bool flipHorizontally, bool flipVertically)
+		public static byte[][] Flip(Dimensions dim, byte[][] planes, bool flipHorizontally, bool flipVertically)
 		{
 			if (!flipHorizontally && !flipVertically) {
 				return planes;
@@ -65,11 +58,11 @@ namespace LibDmd.Common
 				var pos = 0;
 				var plane = new BitArray(planes[n]);
 				var flippedPlane = new BitArray(plane.Length);
-				for (var y = 0; y < height; y++) {
-					for (var x = 0; x < width; x ++) {
-						var xFlipped = flipHorizontally ? (width - 1) - x : x;
-						var yFlipped = flipVertically ? height - y - 1 : y;
-						flippedPlane.Set(pos, plane[width * yFlipped + xFlipped]);
+				for (var y = 0; y < dim.Height; y++) {
+					for (var x = 0; x < dim.Width; x ++) {
+						var xFlipped = flipHorizontally ? (dim.Width - 1) - x : x;
+						var yFlipped = flipVertically ? dim.Height - y - 1 : y;
+						flippedPlane.Set(pos, plane[dim.Width * yFlipped + xFlipped]);
 						pos++;
 					}
 				}
@@ -84,14 +77,15 @@ namespace LibDmd.Common
 		/// Resizes and flips an image
 		/// </summary>
 		/// <param name="bmp">Source image</param>
-		/// <param name="destWidth">Resize to this width</param>
-		/// <param name="destHeight">Resize to this height</param>
+		/// <param name="destDim">Resize to these dimensions</param>
 		/// <param name="resize">How to scale down</param>
 		/// <param name="flipHorizontally">If true, flip horizontally (left/right)</param>
 		/// <param name="flipVertically">If true, flip vertically (top/down)</param>
 		/// <returns>New transformed image or the same image if new dimensions are identical and no flipping taking place</returns>
-		public static BitmapSource Transform(BitmapSource bmp, int destWidth, int destHeight, ResizeMode resize, bool flipHorizontally, bool flipVertically)
+		public static BitmapSource Transform(BitmapSource bmp, Dimensions destDim, ResizeMode resize, bool flipHorizontally, bool flipVertically)
 		{
+			var destWidth = destDim.Width;
+			var destHeight = destDim.Height;
 			if (bmp.PixelWidth == destWidth && bmp.PixelHeight == destHeight && !flipHorizontally && !flipVertically) {
 				return bmp;
 			}
@@ -160,7 +154,7 @@ namespace LibDmd.Common
 				}
 
 			// now the most common case: do nothing.
-			} else if (destWidth == bmp.PixelWidth && destHeight == bmp.PixelHeight) { 
+			} else if (destWidth == bmp.PixelWidth && destHeight == bmp.PixelHeight) {
 				width = bmp.PixelWidth;
 				height = bmp.PixelHeight;
 
@@ -228,7 +222,7 @@ namespace LibDmd.Common
 				processedBmp = emptyBmp;
 				//Console.WriteLine("Repainted bitmap: {0}x{1}", processedBmp.PixelWidth, processedBmp.PixelHeight);
 			}
-			
+
 			processedBmp.Freeze();
 			return processedBmp;
 		}

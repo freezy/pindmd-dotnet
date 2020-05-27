@@ -143,6 +143,8 @@
     <Compile Include="Test\TestOptions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Test\TestImage192x64.png" />
+    <Resource Include="Test\TestImage256x64.png" />
     <Resource Include="Test\TestImage.png" />
     <None Include="App.config" />
     <Content Include="FodyWeavers.xml" />

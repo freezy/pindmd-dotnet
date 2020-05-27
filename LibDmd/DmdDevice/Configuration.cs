@@ -27,6 +27,7 @@ namespace LibDmd.DmdDevice
 		public IPinDmd2Config PinDmd2 { get; }
 		public IPinDmd3Config PinDmd3 { get; }
 		public IPin2DmdConfig Pin2Dmd { get; }
+		public IPin2DmdConfig Pin2DmdXL { get; }
 		public IPixelcadeConfig Pixelcade { get; }
 		public IVideoConfig Video { get; }
 		public IGifConfig Gif { get; }
@@ -98,6 +99,7 @@ namespace LibDmd.DmdDevice
 			PinDmd2 = new PinDmd2Config(_data, this);
 			PinDmd3 = new PinDmd3Config(_data, this);
 			Pin2Dmd = new Pin2DmdConfig(_data, this);
+			Pin2DmdXL = new Pin2DmdXLConfig(_data, this);
 			Pixelcade = new PixelcadeConfig(_data, this);
 			Video = new VideoConfig(_data, this);
 			Gif = new GifConfig(_data, this);
@@ -189,6 +191,15 @@ namespace LibDmd.DmdDevice
 		public bool Enabled => GetBoolean("enabled", false);
 		public int Delay => GetInt("delay", 25);
 		public Pin2DmdConfig(IniData data, Configuration parent) : base(data, parent)
+		{
+		}
+	}
+
+	public class Pin2DmdXLConfig : Pin2DmdConfig
+	{
+		public override string Name { get; } = "pin2dmdxl";
+
+		public Pin2DmdXLConfig(IniData data, Configuration parent) : base(data, parent)
 		{
 		}
 	}

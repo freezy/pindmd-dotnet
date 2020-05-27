@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using LibDmd.Common;
 using LibDmd.DmdDevice;
+using LibDmd.Frame;
 using NLog;
 
 namespace LibDmd.Output.Virtual.AlphaNumeric

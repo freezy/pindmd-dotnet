@@ -2,93 +2,92 @@
 using System.IO;
 using System.Reactive;
 using System.Reactive.Subjects;
-using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using LibDmd.Common;
-using LibDmd.Output;
+using LibDmd.Frame;
 
 namespace LibDmd.Input.FileSystem
 {
 	public class ImageSourceGray2 : ImageSource, IGray2Source
 	{
-		DMDFrame _dmdFrame = new DMDFrame();
+		private readonly DmdFrame _dmdFrame = new DmdFrame();
 
-		public IObservable<DMDFrame> GetGray2Frames() => _frames;
+		public IObservable<DmdFrame> GetGray2Frames() => _frames;
 
-		private readonly BehaviorSubject<DMDFrame> _frames;
+		private readonly BehaviorSubject<DmdFrame> _frames;
 
-		public ImageSourceGray2(BitmapSource bmp)
+		public ImageSourceGray2(BmpFrame frame)
 		{
-			SetDimensions(bmp.PixelWidth, bmp.PixelHeight);
-			_frames = new BehaviorSubject<DMDFrame>(_dmdFrame.Update(bmp.PixelWidth, bmp.PixelHeight, ImageUtil.ConvertToGray2(bmp)));
-		}
-	}	
-	
-	public class ImageSourceGray4 : ImageSource, IGray4Source
-	{
-		DMDFrame _dmdFrame = new DMDFrame();
-
-		public IObservable<DMDFrame> GetGray4Frames() => _frames;
-
-		private readonly BehaviorSubject<DMDFrame> _frames;
-
-		public ImageSourceGray4(BitmapSource bmp)
-		{
-			SetDimensions(bmp.PixelWidth, bmp.PixelHeight);
-			_frames = new BehaviorSubject<DMDFrame>(_dmdFrame.Update(bmp.PixelWidth, bmp.PixelHeight, ImageUtil.ConvertToGray4(bmp)));
+			SetDimensions(frame.Dimensions);
+			_frames = new BehaviorSubject<DmdFrame>(_dmdFrame.Update(frame.ConvertToGray2()));
 		}
 	}
-	
+
+	public class ImageSourceGray4 : ImageSource, IGray4Source
+	{
+		private readonly DmdFrame _dmdFrame = new DmdFrame();
+
+		public IObservable<DmdFrame> GetGray4Frames() => _frames;
+
+		private readonly BehaviorSubject<DmdFrame> _frames;
+
+		public ImageSourceGray4(BmpFrame frame)
+		{
+			SetDimensions(frame.Dimensions);
+			_frames = new BehaviorSubject<DmdFrame>(_dmdFrame.Update(frame.ConvertToGray4()));
+		}
+	}
+
 	public class ImageSourceColoredGray2 : ImageSource, IColoredGray2Source
 	{
 		public IObservable<ColoredFrame> GetColoredGray2Frames() => _frames;
 
 		private readonly BehaviorSubject<ColoredFrame> _frames;
 
-		public ImageSourceColoredGray2(BitmapSource bmp)
+		public ImageSourceColoredGray2(BmpFrame frame)
 		{
-			SetDimensions(bmp.PixelWidth, bmp.PixelHeight);
-			var frame = new ColoredFrame(
-				FrameUtil.Split(bmp.PixelWidth, bmp.PixelHeight, 2, ImageUtil.ConvertToGray2(bmp)),
+			SetDimensions(frame.Dimensions);
+			var coloredFrame = new ColoredFrame(frame.Dimensions,
+				FrameUtil.Split(frame.Dimensions, 2, ImageUtil.ConvertToGray2(frame.Bitmap)),
 				new [] { Colors.Black, Colors.Red, Colors.Green, Colors.Blue }
 			);
-			_frames = new BehaviorSubject<ColoredFrame>(frame);
+			_frames = new BehaviorSubject<ColoredFrame>(coloredFrame);
 		}
 	}
-	
+
 	public class ImageSourceColoredGray4 : ImageSource, IColoredGray4Source
 	{
 		public IObservable<ColoredFrame> GetColoredGray4Frames() => _frames;
 
 		private readonly BehaviorSubject<ColoredFrame> _frames;
 
-		public ImageSourceColoredGray4(BitmapSource bmp)
+		public ImageSourceColoredGray4(BmpFrame frame)
 		{
-			SetDimensions(bmp.PixelWidth, bmp.PixelHeight);
-			var frame = new ColoredFrame(
-				FrameUtil.Split(bmp.PixelWidth, bmp.PixelHeight, 4, ImageUtil.ConvertToGray4(bmp)),
+			SetDimensions(frame.Dimensions);
+			var coloredFrame = new ColoredFrame(frame.Dimensions,
+				FrameUtil.Split(frame.Dimensions, 4, ImageUtil.ConvertToGray4(frame.Bitmap)),
 				new[] {
 					Colors.Black, Colors.Blue, Colors.Purple, Colors.DimGray,
-					Colors.Green, Colors.Brown, Colors.Red, Colors.Gray, 
-					Colors.Tan, Colors.Orange, Colors.Yellow, Colors.LightSkyBlue, 
+					Colors.Green, Colors.Brown, Colors.Red, Colors.Gray,
+					Colors.Tan, Colors.Orange, Colors.Yellow, Colors.LightSkyBlue,
 					Colors.Cyan, Colors.LightGreen, Colors.Pink, Colors.White,
 				}
 			);
-			_frames = new BehaviorSubject<ColoredFrame>(frame);
+			_frames = new BehaviorSubject<ColoredFrame>(coloredFrame);
 		}
 	}
 
 	public class ImageSourceBitmap : ImageSource, IBitmapSource
 	{
-		public IObservable<BitmapSource> GetBitmapFrames() => _frames;
+		public IObservable<BmpFrame> GetBitmapFrames() => _frames;
 
-		private readonly BehaviorSubject<BitmapSource> _frames;
+		private readonly BehaviorSubject<BmpFrame> _frames;
 
-		public ImageSourceBitmap(BitmapSource bmp)
+		public ImageSourceBitmap(BmpFrame frame)
 		{
-			SetDimensions(bmp.PixelWidth, bmp.PixelHeight);
-			_frames = new BehaviorSubject<BitmapSource>(bmp);
+			SetDimensions(frame.Dimensions);
+			_frames = new BehaviorSubject<BmpFrame>(frame);
 		}
 
 		public ImageSourceBitmap(string fileName)
@@ -103,8 +102,9 @@ namespace LibDmd.Input.FileSystem
 				bmp.UriSource = new Uri(Path.IsPathRooted(fileName) ? fileName : Path.Combine(Directory.GetCurrentDirectory(), fileName));
 				bmp.EndInit();
 
-				SetDimensions(bmp.PixelWidth, bmp.PixelHeight);
-				_frames = new BehaviorSubject<BitmapSource>(bmp);
+				var frame = new BmpFrame(bmp);
+				SetDimensions(frame.Dimensions);
+				_frames = new BehaviorSubject<BmpFrame>(frame);
 
 			} catch (UriFormatException) {
 				throw new WrongFormatException($"Error parsing file name \"{fileName}\". Is this a path on the file system?");

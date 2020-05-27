@@ -3,7 +3,6 @@ using System.IO;
 using LibDmd.Common;
 using LibDmd.Common.HeatShrink;
 using System.Linq;
-using MonoLibUsb;
 
 namespace LibDmd.Converter.Colorize
 {

@@ -1,4 +1,4 @@
-﻿using System.Windows.Media.Imaging;
+﻿using LibDmd.Frame;
 
 namespace LibDmd.Output
 {
@@ -12,6 +12,6 @@ namespace LibDmd.Output
 		/// Renders a frame in 4 bit.
 		/// </summary>
 		/// <param name="frame">Array containing Width * Height bytes, with values between 0 and 15 for every pixel.</param>
-		void RenderGray4(byte[] frame);
+		void RenderGray4(DmdFrame frame);
 	}
 }

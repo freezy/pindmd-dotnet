@@ -1,16 +1,16 @@
 ﻿<UserControl x:Class="LibDmd.Output.Virtual.Dmd.VirtualDmdControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:virtual="clr-namespace:LibDmd.Output.Virtual"
              xmlns:dmd="clr-namespace:LibDmd.Output.Virtual.Dmd"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="100" d:DesignWidth="400">
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Image x:Name="Dmd" Source="red-128x32.png">
             <Image.Effect>
-                <dmd:DmdEffect x:Name="Effect" BlockCount="128" AspectRatio="4" Max="1.25"/>
+                <dmd:DmdEffect x:Name="DmdEffect" BlockCount="128" AspectRatio="4" Max="1.25"/>
             </Image.Effect>
         </Image>
         <Grid.Effect>

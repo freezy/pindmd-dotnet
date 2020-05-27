@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Runtime.InteropServices;
-using System.Security.Principal;
 using System.Windows.Media;
-using NLog;
+using LibDmd.Frame;
 
 namespace LibDmd.Input.PinballFX
 {
@@ -49,11 +42,11 @@ namespace LibDmd.Input.PinballFX
 
 			// ..if not, return an empty frame (blank DMD).
 			if (_dmdAddress == IntPtr.Zero) {
-				return new ColoredFrame(128, 32, frame, Color.FromRgb(0, 0, 0));
+				return new ColoredFrame(new Dimensions(128, 32), frame, Color.FromRgb(0, 0, 0));
 			}
 
 			// Retrieve DMD color from memory.
-			_dmdColor = GetDMDColor(_hProcess);    // Return RGB hex color value of DMD (return null value if the color cannot be retrieved). 
+			_dmdColor = GetDMDColor(_hProcess);    // Return RGB hex color value of DMD (return null value if the color cannot be retrieved).
 												   // TODO - APPLY COLOR TO THE DMD
 
 			// Grab the whole raw DMD block from game's memory.
@@ -103,7 +96,7 @@ namespace LibDmd.Input.PinballFX
 			_lastFrame = frame;
 
 			// Return the DMD bitmap we've created or null if frame was identical to previous.
-			return identical ? null : new ColoredFrame(128, 32, frame, _dmdColor);
+			return identical ? null : new ColoredFrame(new Dimensions(128, 32), frame, _dmdColor);
 		}
 
 		// try attaching to a process

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Reactive;
 using System.Reactive.Subjects;
-using LibDmd.Common;
-using LibDmd.Converter.Colorize;
-using NLog.Targets;
+using LibDmd.Frame;
 
 namespace LibDmd.Input.PinMame
 {
@@ -21,7 +19,7 @@ namespace LibDmd.Input.PinMame
 		private readonly ISubject<Unit> _onResume = new Subject<Unit>();
 		private readonly ISubject<Unit> _onPause = new Subject<Unit>();
 
-		private readonly Subject<DMDFrame> _framesGray2 = new Subject<DMDFrame>();
+		private readonly Subject<DmdFrame> _framesGray2 = new Subject<DmdFrame>();
 
 		private readonly BehaviorSubject<FrameFormat> _lastFrameFormat;
 
@@ -30,14 +28,14 @@ namespace LibDmd.Input.PinMame
 			_lastFrameFormat = lastFrameFormat;
 		}
 
-		public void NextFrame(DMDFrame frame)
+		public void NextFrame(DmdFrame frame)
 		{
-			SetDimensions(frame.width, frame.height);
+			SetDimensions(frame.Dimensions);
 			_framesGray2.OnNext(frame);
 			_lastFrameFormat.OnNext(FrameFormat.Gray2);
 		}
 
-		public IObservable<DMDFrame> GetGray2Frames()
+		public IObservable<DmdFrame> GetGray2Frames()
 		{
 			return _framesGray2;
 		}

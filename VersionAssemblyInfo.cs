@@ -1,7 +1,5 @@
 ﻿using System.Resources;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 [assembly: AssemblyCompany("freezy <freezy@vpdb.io>")]
 [assembly: AssemblyCopyright("Copyright (C) 2020 <freezy@vpdb.io>")]

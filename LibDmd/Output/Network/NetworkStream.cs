@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Media;
+using LibDmd.Frame;
 using NLog;
 using WebSocketSharp;
 
@@ -8,7 +9,7 @@ namespace LibDmd.Output.Network
 	public class NetworkStream : IGray2Destination, IGray4Destination, IColoredGray2Destination, IColoredGray4Destination, IResizableDestination
 	{
 		public string Name { get; } = "Network Stream";
-		public bool IsAvailable { get; private set; } = false;
+		public bool IsAvailable { get; private set; }
 
 		private WebSocket _client;
 		private Uri _uri;
@@ -51,7 +52,7 @@ namespace LibDmd.Output.Network
 			if (_gameName != null) {
 				_client.Send(_serializer.SerializeGameName(_gameName));
 			}
-			_client.Send(_serializer.SerializeDimensions(_serializer.Width, _serializer.Height));
+			_client.Send(_serializer.SerializeDimensions(_serializer.Dimensions));
 			_client.Send(_serializer.SerializeColor(_color));
 			if (_palette != null) {
 				_client.Send(_serializer.SerializePalette(_palette));
@@ -69,24 +70,24 @@ namespace LibDmd.Output.Network
 			IsAvailable = false;
 		}
 
-		private void SendGray(byte[] frame, int bitlength)
+		private void SendGray(DmdFrame frame, int bitlength)
 		{
-			if (frame.Length < _serializer.Width * _serializer.Height) {
-				Logger.Info("SendGray: invalid frame received frame.length={0} bitlength={1} width={2} height={3}", frame.Length, bitlength, _serializer.Width, _serializer.Height);
+			if (frame.Data.Length < _serializer.Dimensions.Surface) {
+				Logger.Info("SendGray: invalid frame received frame.length={0} bitlength={1} dim={2}", frame.Data.Length, bitlength, _serializer.Dimensions);
 				return;
 			}
 			if (IsAvailable) {
-				_client.Send(_serializer.SerializeGray(frame, bitlength));
+				_client.Send(_serializer.SerializeGray(frame.Data, bitlength));
 			}
 
 		}
 
-		public void RenderGray2(byte[] frame)
+		public void RenderGray2(DmdFrame frame)
 		{
 			SendGray(frame, 2);
 		}
 
-		public void RenderGray4(byte[] frame)
+		public void RenderGray4(DmdFrame frame)
 		{
 			SendGray(frame, 4);
 		}
@@ -105,17 +106,17 @@ namespace LibDmd.Output.Network
 			}
 		}
 
-		public void RenderRgb24(byte[] frame)
+		public void RenderRgb24(DmdFrame frame)
 		{
 			if (IsAvailable) {
-				_client.Send(_serializer.SerializeRgb24(frame));
+				_client.Send(_serializer.SerializeRgb24(frame.Data));
 			}
 		}
 
-		public void SetDimensions(int width, int height)
+		public void SetDimensions(Dimensions dimensions)
 		{
 			if (IsAvailable) {
-				_client.Send(_serializer.SerializeDimensions(width, height));
+				_client.Send(_serializer.SerializeDimensions(dimensions));
 			}
 		}
 
@@ -153,12 +154,11 @@ namespace LibDmd.Output.Network
 		{
 			// ignore
 		}
-		
+
 		public void Dispose()
 		{
 			((IDisposable)_client)?.Dispose();
 		}
-
 	}
 
 }

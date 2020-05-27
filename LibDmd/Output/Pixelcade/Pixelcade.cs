@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media;
 using LibDmd.Common;
+using LibDmd.Frame;
 using NLog;
 
 namespace LibDmd.Output.Pixelcade
@@ -16,9 +17,9 @@ namespace LibDmd.Output.Pixelcade
 	{
 		public string Name { get; } = "Pixelcade";
 		public bool IsAvailable { get; private set; }
-		public int Delay { get; set; } = 100;
-		public int DmdWidth { get; } = 128;
-		public int DmdHeight { get; } = 32;
+		private int Delay { get; } = 100;
+
+		public Dimensions FixedSize { get; } = new Dimensions(128, 32);
 
 		private const int ReadTimeoutMs = 100;
 		private const byte RgbLedMatrixFrameCommandByte = 0x1F;
@@ -60,7 +61,7 @@ namespace LibDmd.Output.Pixelcade
 		{
 			if (_instance == null) {
 				_instance = new Pixelcade();
-			} 
+			}
 			_instance.Init();
 			return _instance;
 		}
@@ -75,7 +76,7 @@ namespace LibDmd.Output.Pixelcade
 		{
 			if (_instance == null) {
 				_instance = new Pixelcade { Port = port, ColorMatrix = colorMatrix };
-			} 
+			}
 			_instance.Init();
 			return _instance;
 		}
@@ -85,7 +86,7 @@ namespace LibDmd.Output.Pixelcade
 		/// </summary>
 		private Pixelcade()
 		{
-			_frameBuffer = new byte[DmdHeight * DmdWidth * 3 / 2 + 1];
+			_frameBuffer = new byte[FixedSize.Surface * 3 / 2 + 1];
 			_frameBuffer[0] = RgbLedMatrixFrameCommandByte;
 		}
 
@@ -109,7 +110,7 @@ namespace LibDmd.Output.Pixelcade
 				return;
 			}
 
-			// put the matrix into stream mode 
+			// put the matrix into stream mode
 			EnableRgbLedMatrix(4, 16);
 		}
 		private bool Connect(string port)
@@ -157,15 +158,15 @@ namespace LibDmd.Output.Pixelcade
 			}
 			return false;
 		}
-	
-		public void RenderRgb24(byte[] frameRgb24)
+
+		public void RenderRgb24(DmdFrame frame)
 		{
 			// convert rgb24 to rgb565
-			var frame565 = ImageUtil.ConvertToRgb565(DmdWidth, DmdHeight, frameRgb24);
+			var frame565 = ImageUtil.ConvertToRgb565(FixedSize, frame.Data);
 
 			// split into planes to send over the wire
-			var newFrame = new byte[DmdHeight * DmdWidth * 3 / 2];
-			FrameUtil.SplitIntoRgbPlanes(frame565, DmdWidth, 16, newFrame, ColorMatrix);
+			var newFrame = new byte[FixedSize.Surface * 3 / 2];
+			FrameUtil.SplitIntoRgbPlanes(frame565, FixedSize.Width, 16, newFrame, ColorMatrix);
 
 			// copy to frame buffer
 			var changed = FrameUtil.Copy(newFrame, _frameBuffer, 1);
@@ -230,7 +231,7 @@ namespace LibDmd.Output.Pixelcade
 		private void EnableRgbLedMatrix(int shifterLen32, int rows)
 		{
 			_serialPort.Write(new[] {
-				RgbLedMatrixEnableCommandByte, 
+				RgbLedMatrixEnableCommandByte,
 				(byte)(shifterLen32 & 0x0F | ((rows == 8 ? 0 : 1) << 4))
 			}, 0, 2);
 		}

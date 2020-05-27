@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reactive;
@@ -25,10 +24,10 @@ using Microsoft.Win32;
 #if !DEBUG
 using Mindscape.Raygun4Net;
 using NLog.Targets;
+using System.Collections.Generic;
 #endif
 using NLog;
 using NLog.Config;
-
 
 namespace DmdExt
 {

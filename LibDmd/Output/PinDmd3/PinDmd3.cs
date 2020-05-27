@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Drawing.Drawing2D;
 using System.IO.Ports;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using LibDmd.Common;
+using LibDmd.Frame;
 using NLog;
 using static System.Text.Encoding;
 
@@ -20,9 +20,8 @@ namespace LibDmd.Output.PinDmd3
 		public string Name { get; } = "PinDMD v3";
 		public bool IsAvailable { get; private set; }
 
-		public int Delay { get; set; } = 100;
-		public int DmdWidth { get; } = 128;
-		public int DmdHeight { get; } = 32;
+		private int Delay { get; } = 100;
+		public Dimensions FixedSize { get; } = new Dimensions(128, 32);
 
 		private const int ReadTimeoutMs = 100;
 		private const int WriteTimeoutMs = 100;
@@ -74,7 +73,7 @@ namespace LibDmd.Output.PinDmd3
 		{
 			if (_instance == null) {
 				_instance = new PinDmd3();
-			} 
+			}
 			_instance.Init();
 			return _instance;
 		}
@@ -88,7 +87,7 @@ namespace LibDmd.Output.PinDmd3
 		{
 			if (_instance == null) {
 				_instance = new PinDmd3 { Port = port };
-			} 
+			}
 			_instance.Init();
 			return _instance;
 		}
@@ -99,22 +98,22 @@ namespace LibDmd.Output.PinDmd3
 		private PinDmd3()
 		{
 			// 3 bytes per pixel, 2 control bytes
-			_frameBufferRgb24 = new byte[DmdWidth * DmdHeight * 3 + 2];
+			_frameBufferRgb24 = new byte[FixedSize.Surface * 3 + 2];
 			_frameBufferRgb24[0] = Rgb24CommandByte;
-			_frameBufferRgb24[DmdWidth * DmdHeight * 3 + 1] = Rgb24CommandByte;
+			_frameBufferRgb24[FixedSize.Surface * 3 + 1] = Rgb24CommandByte;
 
 			// 4 bits per pixel, 14 control bytes
-			_frameBufferGray4 = new byte[DmdWidth * DmdHeight / 2 + 14];     
+			_frameBufferGray4 = new byte[FixedSize.Surface / 2 + 14];
 			_frameBufferGray4[0] = Gray4CommandByte;
-			_frameBufferGray4[DmdWidth * DmdHeight / 2 + 13] = Gray4CommandByte;
-			
+			_frameBufferGray4[FixedSize.Surface / 2 + 13] = Gray4CommandByte;
+
 			// 2 bits per pixel, 14 control bytes
-			_frameBufferGray2 = new byte[DmdWidth * DmdHeight / 4 + 14];     
+			_frameBufferGray2 = new byte[FixedSize.Surface / 4 + 14];
 			_frameBufferGray2[0] = Gray2CommandByte;
-			_frameBufferGray2[DmdWidth * DmdHeight / 4 + 13] = Gray2CommandByte;
+			_frameBufferGray2[FixedSize.Surface / 4 + 13] = Gray2CommandByte;
 
 			// 16 colors, 4 bytes of pixel, 2 control bytes
-			_frameBufferColoredGray4 = new byte[1 + 48 + DmdWidth * DmdHeight / 2 + 1];
+			_frameBufferColoredGray4 = new byte[1 + 48 + FixedSize.Surface / 2 + 1];
 			_frameBufferColoredGray4[0] = ColoredGray4CommandByte;
 			_frameBufferColoredGray4[_frameBufferColoredGray4.Length - 1] = ColoredGray4CommandByte;
 
@@ -145,7 +144,7 @@ namespace LibDmd.Output.PinDmd3
 
 			// TODO decrypt these
 			_serialPort.Write(new byte[] { 0x43, 0x13, 0x55, 0xdb, 0x5c, 0x94, 0x4e, 0x0, 0x0, 0x43 }, 0, 10);
-			System.Threading.Thread.Sleep(Delay); // duuh...
+			Thread.Sleep(Delay); // duuh...
 
 			var result = new byte[20];
 			_serialPort.Read(result, 0, 20); // no idea what this is
@@ -161,7 +160,7 @@ namespace LibDmd.Output.PinDmd3
 				_serialPort.WriteTimeout= WriteTimeoutMs;
 				_serialPort.Open();
 				_serialPort.Write(new byte[] { 0x42, 0x42 }, 0, 2);
-				System.Threading.Thread.Sleep(Delay); // duh...
+				Thread.Sleep(Delay); // duh...
 
 				var result = new byte[100];
 				_serialPort.Read(result, 0, 100);
@@ -188,16 +187,16 @@ namespace LibDmd.Output.PinDmd3
 					_serialPort.DiscardInBuffer();
 					_serialPort.DiscardOutBuffer();
 					_serialPort.Close();
-					System.Threading.Thread.Sleep(Delay); // otherwise the next device will fail
+					Thread.Sleep(Delay); // otherwise the next device will fail
 				}
 			}
 			return false;
 		}
 
-		public void RenderGray2(byte[] frame)
+		public void RenderGray2(DmdFrame frame)
 		{
 			// split to sub frames
-			var planes = FrameUtil.Split(DmdWidth, DmdHeight, 2, frame);
+			var planes = FrameUtil.Split(FixedSize, 2, frame.Data);
 
 			// copy to frame buffer
 			var changed = FrameUtil.Copy(planes, _frameBufferGray2, 13);
@@ -223,10 +222,10 @@ namespace LibDmd.Output.PinDmd3
 			}
 		}
 
-		public void RenderGray4(byte[] frame)
+		public void RenderGray4(DmdFrame frame)
 		{
 			// split to sub frames
-			var planes = FrameUtil.Split(DmdWidth, DmdHeight, 4, frame);
+			var planes = FrameUtil.Split(FixedSize, 4, frame.Data);
 
 			// copy to frame buffer
 			var changed = FrameUtil.Copy(planes, _frameBufferGray4, 13);
@@ -241,9 +240,9 @@ namespace LibDmd.Output.PinDmd3
 		{
 			// fall back if firmware doesn't support colored gray 4
 			if (!_supportsColoredGray4) {
-				var rgb24Frame = ColorUtil.ColorizeFrame(DmdWidth, DmdHeight,
-					FrameUtil.Join(DmdWidth, DmdHeight, frame.Planes), frame.Palette);
-				RenderRgb24(rgb24Frame);
+				var rgb24FrameData = ColorUtil.ColorizeFrame(FixedSize,
+					FrameUtil.Join(FixedSize, frame.Planes), frame.Palette);
+				RenderRgb24(new DmdFrame(frame.Dimensions, rgb24FrameData));
 				return;
 			}
 
@@ -267,10 +266,10 @@ namespace LibDmd.Output.PinDmd3
 			}
 		}
 
-		public void RenderRgb24(byte[] frame)
+		public void RenderRgb24(DmdFrame frame)
 		{
 			// copy data to frame buffer
-			var changed = FrameUtil.Copy(frame, _frameBufferRgb24, 1);
+			var changed = FrameUtil.Copy(frame.Data, _frameBufferRgb24, 1);
 
 			// can directly be sent to the device.
 			if (changed) {
@@ -298,11 +297,11 @@ namespace LibDmd.Output.PinDmd3
 
 					/*var ticks = DateTime.Now.Ticks - start;
 					var seconds = (double)ticks / TimeSpan.TicksPerSecond;
-					Logger.Debug("{0}ms for {1} bytes ({2} baud), {3}ms ({4} fps)", 
-						Math.Round((double)ticks / TimeSpan.TicksPerMillisecond * 1000) / 1000, 
-						data.Length, 
+					Logger.Debug("{0}ms for {1} bytes ({2} baud), {3}ms ({4} fps)",
+						Math.Round((double)ticks / TimeSpan.TicksPerMillisecond * 1000) / 1000,
+						data.Length,
 						(double)data.Length * 8 / seconds,
-						Math.Round((double)lastFrame / TimeSpan.TicksPerMillisecond * 1000) / 1000, 
+						Math.Round((double)lastFrame / TimeSpan.TicksPerMillisecond * 1000) / 1000,
 						Math.Round((double)TimeSpan.TicksPerSecond / lastFrame * 1000) / 1000
 						);
 					_lastTick = start;*/

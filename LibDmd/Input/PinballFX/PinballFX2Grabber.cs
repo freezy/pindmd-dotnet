@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibDmd.Input.PinballFX
+﻿namespace LibDmd.Input.PinballFX
 {
 	public class PinballFX2Grabber : PinballFXGrabber
 	{

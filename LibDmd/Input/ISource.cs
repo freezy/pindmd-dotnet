@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Reactive;
 using System.Reactive.Subjects;
+using LibDmd.Frame;
 
 namespace LibDmd.Input
 {
 	/// <summary>
 	/// Acts as source for any frames ending up on the DMD.
 	/// </summary>
-	/// 
+	///
 	/// <remarks>
 	/// Since we want a contineous flow of frames, the method to override
 	/// returns an observable. Note that the producer decides on the frequency
 	/// in which frames are delivered to the consumer.
-	/// 
+	///
 	/// When implementing a source, make sure to only implement the "native"
-	/// bit lengths of the source. Convertion if necessary is done in the Render
+	/// bit lengths of the source. Conversion if necessary is done in the Render
 	/// Graph directly.
 	/// </remarks>
 	public interface ISource
@@ -38,20 +39,6 @@ namespace LibDmd.Input
 		/// An observable that triggers when the source is interrupted, e.g. a game is stopped.
 		/// </summary>
 		IObservable<Unit> OnPause { get; }
-	}
-
-	/// <summary>
-	/// A set of dimensions, in pixel.
-	/// </summary>
-	public struct Dimensions
-	{
-		public int Width { get; set; }
-		public int Height { get; set; }
-
-		public Dimensions(int width, int height) {
-			Width = width;
-			Height = height;
-		}
 	}
 
 	public enum ResizeMode

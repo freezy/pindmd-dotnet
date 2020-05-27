@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -15,16 +14,17 @@ using System.Windows.Threading;
 using LibDmd.Common;
 using LibDmd.Converter;
 using LibDmd.Converter.Colorize;
+using LibDmd.Frame;
 using LibDmd.Input.PinMame;
 using LibDmd.Output;
 using LibDmd.Output.FileOutput;
 using LibDmd.Output.Network;
+using LibDmd.Output.Pin2Dmd;
 using LibDmd.Output.PinDmd1;
 using LibDmd.Output.PinDmd2;
 using LibDmd.Output.PinDmd3;
 using LibDmd.Output.PinUp;
 using LibDmd.Output.Pixelcade;
-using LibDmd.Output.Virtual;
 using LibDmd.Output.Virtual.AlphaNumeric;
 using Microsoft.Win32;
 using Mindscape.Raygun4Net;
@@ -40,19 +40,17 @@ namespace LibDmd.DmdDevice
 	/// <seealso cref="LibDmd.DmdDevice">Vo det chemid d Datä übr VPinMAME</seealso>
 	public class DmdDevice : IDmdDevice
 	{
-		private const int Width = 128;
-		private const int Height = 32;
-
 		private readonly Configuration _config;
 		private readonly VpmGray2Source _vpmGray2Source;
 		private readonly VpmGray4Source _vpmGray4Source;
 		private readonly VpmRgb24Source _vpmRgb24Source;
 		private readonly VpmAlphaNumericSource _vpmAlphaNumericSource;
-		private readonly BehaviorSubject<FrameFormat> _currentFrameFormat;
 		private readonly RenderGraphCollection _graphs = new RenderGraphCollection();
+
 		private static string _version = "";
 		private static string _sha = "";
 		private static string _fullVersion = "";
+
 		private VirtualDmd _virtualDmd;
 		private VirtualAlphanumericDestination _alphaNumericDest;
 
@@ -60,11 +58,11 @@ namespace LibDmd.DmdDevice
 		private string _gameName;
 		private bool _colorize;
 		private Color _color = RenderGraph.DefaultColor;
-		private DMDFrame _dmdFrame = new DMDFrame();
+		private readonly DmdFrame _alphaNumFrame = new DmdFrame(new Dimensions(128, 32));
 
 		// Iifärbigsziig
 		private Color[] _palette;
-		DMDFrame _upsizedFrame;
+		private DmdFrame _upsizedFrame;
 		private Gray2Colorizer _gray2Colorizer;
 		private Gray4Colorizer _gray4Colorizer;
 		private Coloring _coloring;
@@ -82,11 +80,11 @@ namespace LibDmd.DmdDevice
 
 		public DmdDevice()
 		{
-			_currentFrameFormat = new BehaviorSubject<FrameFormat>(FrameFormat.Rgb24);
-			_vpmGray2Source = new VpmGray2Source(_currentFrameFormat);
-			_vpmGray4Source = new VpmGray4Source(_currentFrameFormat);
-			_vpmRgb24Source = new VpmRgb24Source(_currentFrameFormat);
-			_vpmAlphaNumericSource = new VpmAlphaNumericSource(_currentFrameFormat);
+			var currentFrameFormat = new BehaviorSubject<FrameFormat>(FrameFormat.Rgb24);
+			_vpmGray2Source = new VpmGray2Source(currentFrameFormat);
+			_vpmGray4Source = new VpmGray4Source(currentFrameFormat);
+			_vpmRgb24Source = new VpmRgb24Source(currentFrameFormat);
+			_vpmAlphaNumericSource = new VpmAlphaNumericSource(currentFrameFormat);
 
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
@@ -124,7 +122,7 @@ namespace LibDmd.DmdDevice
 				} else {
 					_fullVersion = $"{_version} ({_sha})";
 				}
-				
+
 			} else {
 				_fullVersion = fvi.ProductVersion;
 				_sha = "";
@@ -143,7 +141,7 @@ namespace LibDmd.DmdDevice
 		/// </remarks>
 		public void Init()
 		{
-			if (_isOpen) { 
+			if (_isOpen) {
 				return;
 			}
 
@@ -224,7 +222,7 @@ namespace LibDmd.DmdDevice
 		}
 
 		/// <summary>
-		/// Tuät ä nii Inschantz vom virtueuä DMD kreiärä und tuät drnah d 
+		/// Tuät ä nii Inschantz vom virtueuä DMD kreiärä und tuät drnah d
 		/// Render-Graphä drabindä.
 		/// </summary>
 		private void CreateVirtualDmd()
@@ -267,7 +265,7 @@ namespace LibDmd.DmdDevice
 		}
 
 		/// <summary>
-		/// Kreiärt ä Render-Graph fir jedä Input-Tip und bindet si as 
+		/// Kreiärt ä Render-Graph fir jedä Input-Tip und bindet si as
 		/// virtueuä DMD.
 		/// </summary>
 		private void SetupGraphs()
@@ -297,13 +295,23 @@ namespace LibDmd.DmdDevice
 				}
 			}
 			if (_config.Pin2Dmd.Enabled) {
-				var pin2Dmd = Output.Pin2Dmd.Pin2Dmd.GetInstance(_config.Pin2Dmd.Delay);
+				var pin2Dmd = Pin2Dmd.GetInstance(_config.Pin2Dmd.Delay);
 				if (pin2Dmd.IsAvailable) {
 					renderers.Add(pin2Dmd);
 					if (_coloring != null) {
 						pin2Dmd.PreloadPalettes(_coloring);
 					}
 					Logger.Info("Added PIN2DMD renderer.");
+				}
+			}
+			if (_config.Pin2DmdXL.Enabled) {
+				var pin2DmdXL = Pin2DmdXL.GetInstance(_config.Pin2DmdXL.Delay);
+				if (pin2DmdXL.IsAvailable) {
+					renderers.Add(pin2DmdXL);
+					if (_coloring != null) {
+						pin2DmdXL.PreloadPalettes(_coloring);
+					}
+					Logger.Info("Added PIN2DMD XL renderer.");
 				}
 			}
 			if (_config.Pixelcade.Enabled) {
@@ -440,7 +448,7 @@ namespace LibDmd.DmdDevice
 				FlipHorizontally = _config.Global.FlipHorizontally,
 				FlipVertically = _config.Global.FlipVertically
 			});
-			
+
 			// alphanumeric graph
 			_graphs.Add(new RenderGraph {
 				Name = "Alphanumeric VPM Graph",
@@ -608,46 +616,46 @@ namespace LibDmd.DmdDevice
 			_palette = colors;
 		}
 
-		public void RenderGray2(DMDFrame frame)
+		public void RenderGray2(DmdFrame frame)
 		{
 			if (!_isOpen) {
 				Init();
 			}
-			int width = frame.width;
-			int height = frame.height;
+			var width = frame.Dimensions.Width;
+			int height = frame.Dimensions.Height;
 
-			if (_gray2Colorizer != null && frame.width == 128 && frame.height == 16 && _gray2Colorizer.Has128x32Animation)
-			{
-				// Pin2DMD colorization may have 512 byte masks with a 128x16 source, 
+			if (_gray2Colorizer != null && width == 128 && height == 16 && _gray2Colorizer.Has128x32Animation) {
+
+				// Pin2DMD colorization may have 512 byte masks with a 128x16 source,
 				// indicating this should be upsized and treated as a centered 128x32 DMD.
 
-				height = frame.height;
-				height *= 2;
-				_gray2Colorizer.SetDimensions(width, height);
-				if (_upsizedFrame == null)
-					_upsizedFrame = new DMDFrame() { width = width, height = height, Data = new byte[width * height] };
-				Buffer.BlockCopy(frame.Data, 0, _upsizedFrame.Data, 8*width, frame.Data.Length);
+				var newDim = new Dimensions(width, height * 2);
+				_gray2Colorizer.SetDimensions(newDim);
+				if (_upsizedFrame == null) {
+					_upsizedFrame = new DmdFrame(newDim);
+				}
+
+				Buffer.BlockCopy(frame.Data, 0, _upsizedFrame.Data, 8 * width, frame.Data.Length);
 				_vpmGray2Source.NextFrame(_upsizedFrame);
-			}
-			else
-			{
-				_gray2Colorizer?.SetDimensions(width, height);
-				_gray4Colorizer?.SetDimensions(width, height);
+
+			} else {
+				_gray2Colorizer?.SetDimensions(frame.Dimensions);
+				_gray4Colorizer?.SetDimensions(frame.Dimensions);
 				_vpmGray2Source.NextFrame(frame);
 			}
 		}
 
-		public void RenderGray4(DMDFrame frame)
+		public void RenderGray4(DmdFrame frame)
 		{
 			if (!_isOpen) {
 				Init();
 			}
-			_gray2Colorizer?.SetDimensions(frame.width, frame.height);
-			_gray4Colorizer?.SetDimensions(frame.width, frame.height);
+			_gray2Colorizer?.SetDimensions(frame.Dimensions);
+			_gray4Colorizer?.SetDimensions(frame.Dimensions);
 			_vpmGray4Source.NextFrame(frame);
 		}
 
-		public void RenderRgb24(DMDFrame frame)
+		public void RenderRgb24(DmdFrame frame)
 		{
 			if (!_isOpen) {
 				Init();
@@ -661,53 +669,51 @@ namespace LibDmd.DmdDevice
 				Init();
 			}
 			_vpmAlphaNumericSource.NextFrame(new AlphaNumericFrame(layout, segData, segDataExtended));
-			_dmdFrame.width = Width;
-			_dmdFrame.height = Height;
 
 			//Logger.Info("Alphanumeric: {0}", layout);
 			switch (layout) {
 				case NumericalLayout.__2x16Alpha:
-					_vpmGray2Source.NextFrame(_dmdFrame.Update(AlphaNumeric.Render2x16Alpha(segData)));
+					_vpmGray2Source.NextFrame(_alphaNumFrame.Update(AlphaNumeric.Render2x16Alpha(segData)));
 					break;
 				case NumericalLayout.None:
 				case NumericalLayout.__2x20Alpha:
-					_vpmGray2Source.NextFrame(_dmdFrame.Update(AlphaNumeric.Render2x20Alpha(segData)));
+					_vpmGray2Source.NextFrame(_alphaNumFrame.Update(AlphaNumeric.Render2x20Alpha(segData)));
 					break;
 				case NumericalLayout.__2x7Alpha_2x7Num:
-					_vpmGray2Source.NextFrame(_dmdFrame.Update(AlphaNumeric.Render2x7Alpha_2x7Num(segData)));
+					_vpmGray2Source.NextFrame(_alphaNumFrame.Update(AlphaNumeric.Render2x7Alpha_2x7Num(segData)));
 					break;
 				case NumericalLayout.__2x7Alpha_2x7Num_4x1Num:
-					_vpmGray2Source.NextFrame(_dmdFrame.Update(AlphaNumeric.Render2x7Alpha_2x7Num_4x1Num(segData)));
+					_vpmGray2Source.NextFrame(_alphaNumFrame.Update(AlphaNumeric.Render2x7Alpha_2x7Num_4x1Num(segData)));
 					break;
 				case NumericalLayout.__2x7Num_2x7Num_4x1Num:
-					_vpmGray2Source.NextFrame(_dmdFrame.Update(AlphaNumeric.Render2x7Num_2x7Num_4x1Num(segData)));
+					_vpmGray2Source.NextFrame(_alphaNumFrame.Update(AlphaNumeric.Render2x7Num_2x7Num_4x1Num(segData)));
 					break;
 				case NumericalLayout.__2x7Num_2x7Num_10x1Num:
-					_vpmGray2Source.NextFrame(_dmdFrame.Update(AlphaNumeric.Render2x7Num_2x7Num_10x1Num(segData, segDataExtended)));
+					_vpmGray2Source.NextFrame(_alphaNumFrame.Update(AlphaNumeric.Render2x7Num_2x7Num_10x1Num(segData, segDataExtended)));
 					break;
 				case NumericalLayout.__2x7Num_2x7Num_4x1Num_gen7:
-					_vpmGray2Source.NextFrame(_dmdFrame.Update(AlphaNumeric.Render2x7Num_2x7Num_4x1Num_gen7(segData)));
+					_vpmGray2Source.NextFrame(_alphaNumFrame.Update(AlphaNumeric.Render2x7Num_2x7Num_4x1Num_gen7(segData)));
 					break;
 				case NumericalLayout.__2x7Num10_2x7Num10_4x1Num:
-					_vpmGray2Source.NextFrame(_dmdFrame.Update(AlphaNumeric.Render2x7Num10_2x7Num10_4x1Num(segData)));
+					_vpmGray2Source.NextFrame(_alphaNumFrame.Update(AlphaNumeric.Render2x7Num10_2x7Num10_4x1Num(segData)));
 					break;
 				case NumericalLayout.__2x6Num_2x6Num_4x1Num:
-					_vpmGray2Source.NextFrame(_dmdFrame.Update(AlphaNumeric.Render2x6Num_2x6Num_4x1Num(segData)));
+					_vpmGray2Source.NextFrame(_alphaNumFrame.Update(AlphaNumeric.Render2x6Num_2x6Num_4x1Num(segData)));
 					break;
 				case NumericalLayout.__2x6Num10_2x6Num10_4x1Num:
-					_vpmGray2Source.NextFrame(_dmdFrame.Update(AlphaNumeric.Render2x6Num10_2x6Num10_4x1Num(segData)));
+					_vpmGray2Source.NextFrame(_alphaNumFrame.Update(AlphaNumeric.Render2x6Num10_2x6Num10_4x1Num(segData)));
 					break;
 				case NumericalLayout.__4x7Num10:
-					_vpmGray2Source.NextFrame(_dmdFrame.Update(AlphaNumeric.Render4x7Num10(segData)));
+					_vpmGray2Source.NextFrame(_alphaNumFrame.Update(AlphaNumeric.Render4x7Num10(segData)));
 					break;
 				case NumericalLayout.__6x4Num_4x1Num:
-					_vpmGray2Source.NextFrame(_dmdFrame.Update(AlphaNumeric.Render6x4Num_4x1Num(segData)));
+					_vpmGray2Source.NextFrame(_alphaNumFrame.Update(AlphaNumeric.Render6x4Num_4x1Num(segData)));
 					break;
 				case NumericalLayout.__2x7Num_4x1Num_1x16Alpha:
-					_vpmGray2Source.NextFrame(_dmdFrame.Update(AlphaNumeric.Render2x7Num_4x1Num_1x16Alpha(segData)));
+					_vpmGray2Source.NextFrame(_alphaNumFrame.Update(AlphaNumeric.Render2x7Num_4x1Num_1x16Alpha(segData)));
 					break;
 				case NumericalLayout.__1x16Alpha_1x16Num_1x7Num:
-					_vpmGray2Source.NextFrame(_dmdFrame.Update(AlphaNumeric.Render1x16Alpha_1x16Num_1x7Num(segData)));
+					_vpmGray2Source.NextFrame(_alphaNumFrame.Update(AlphaNumeric.Render1x16Alpha_1x16Num_1x7Num(segData)));
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(layout), layout, null);
@@ -722,12 +728,12 @@ namespace LibDmd.DmdDevice
 			}
 #if !DEBUG
 			Raygun.ApplicationVersion = _fullVersion;
-			Raygun.Send(ex, 
-				new List<string> { Process.GetCurrentProcess().ProcessName }, 
-				new Dictionary<string, string> { 
+			Raygun.Send(ex,
+				new List<string> { Process.GetCurrentProcess().ProcessName },
+				new Dictionary<string, string> {
 					{ "log", string.Join("\n", MemLogger.Logs) },
 					{ "sha", _sha }
-				} 
+				}
 			);
 #endif
 		}

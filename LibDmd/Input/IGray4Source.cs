@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LibDmd.Frame;
 
 namespace LibDmd.Input
 {
@@ -19,6 +16,6 @@ namespace LibDmd.Input
 		/// between 0 and 15 for every pixel.
 		/// </summary>
 		/// <remarks>When disposed, frame production must stop.</remarks>
-		IObservable<DMDFrame> GetGray4Frames();
+		IObservable<DmdFrame> GetGray4Frames();
 	}
 }

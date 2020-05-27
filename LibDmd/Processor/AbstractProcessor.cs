@@ -2,8 +2,6 @@
 using System.IO;
 using System.Reactive.Subjects;
 using System.Windows.Media.Imaging;
-using LibDmd.Input;
-using LibDmd.Output;
 
 namespace LibDmd.Processor
 {

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using NLog;
+using LibDmd.Frame;
 
 namespace LibDmd.Output.FileOutput
 {
@@ -37,9 +36,10 @@ namespace LibDmd.Output.FileOutput
 		/// <summary>
 		/// Renders an image to the display.
 		/// </summary>
-		/// <param name="bmp">Any bitmap</param>
-		public void RenderBitmap(BitmapSource bmp)
+		/// <param name="frame">Any bitmap</param>
+		public void RenderBitmap(BmpFrame frame)
 		{
+			var bmp = frame.Bitmap;
 			// hash bitmap to see if we already saved it
 			var bytesPerPixel = (bmp.Format.BitsPerPixel + 7) / 8;
 			var bytes = new byte[bytesPerPixel * bmp.PixelWidth * bmp.PixelHeight];

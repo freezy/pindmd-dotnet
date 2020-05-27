@@ -1,4 +1,4 @@
-﻿using System.Windows.Media.Imaging;
+﻿using LibDmd.Frame;
 
 namespace LibDmd.Output
 {
@@ -12,6 +12,6 @@ namespace LibDmd.Output
 		/// Renders a bitmap frame.
 		/// </summary>
 		/// <param name="bmp">Frame to render</param>
-		void RenderBitmap(BitmapSource bmp);
+		void RenderBitmap(BmpFrame bmp);
 	}
 }

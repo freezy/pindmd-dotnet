@@ -7,13 +7,13 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Media.Imaging;
 using LibDmd.Common;
+using LibDmd.Frame;
 using LibDmd.Processor;
-using NLog;
 
 namespace LibDmd.Input.ScreenGrabber
 {
 	/// <summary>
-	/// A screen grabber that captures a portion of the desktop given by 
+	/// A screen grabber that captures a portion of the desktop given by
 	/// position and dimensions.
 	/// </summary>
 	public class ScreenGrabber : AbstractSource, IBitmapSource
@@ -29,31 +29,24 @@ namespace LibDmd.Input.ScreenGrabber
 		public int Top { get; set; }
 		public int Width = 128;
 		public int Height = 32;
-		public int DestinationWidth
-		{
-			get { return _destWidth; }
+
+		public Dimensions DestinationDimensions {
+			get { return _destDimensions; }
 			set {
-				_destWidth = value;
-				SetDimensions(_destWidth, _destHeight);
-			}
-		}
-		public int DestinationHeight {
-			get { return _destHeight; }
-			set {
-				_destHeight = value;
-				SetDimensions(_destWidth, _destHeight);
+				_destDimensions = value;
+				SetDimensions(_destDimensions);
 			}
 		}
 
-		private int _destWidth = 128;
-		private int _destHeight = 32;
+		private Dimensions _destDimensions = new Dimensions(128, 32);
 
 		private readonly ISubject<Unit> _onResume = new Subject<Unit>();
 		private readonly ISubject<Unit> _onPause = new Subject<Unit>();
 
-		private IObservable<BitmapSource> _frames;
+		private readonly BmpFrame _frame = new BmpFrame();
+		private IObservable<BmpFrame> _frames;
 
-		public IObservable<BitmapSource> GetBitmapFrames()
+		public IObservable<BmpFrame> GetBitmapFrames()
 		{
 			var enabledProcessors = Processors.Where(processor => processor.Enabled);
 			return _frames ?? (
@@ -62,10 +55,10 @@ namespace LibDmd.Input.ScreenGrabber
 					.Select(x => CaptureImage())
 					.Select(bmp => enabledProcessors.Aggregate(bmp, (currentBmp, processor) => processor.Process(currentBmp)))
 					.Select(bmp => {
-						if (DestinationHeight > 0 && DestinationWidth > 0) {
-							return TransformationUtil.Transform(bmp, DestinationWidth, DestinationHeight, ResizeMode.Stretch, false, false);
+						if (!_destDimensions.IsFlat) {
+							return _frame.Update(TransformationUtil.Transform(bmp, _destDimensions, ResizeMode.Stretch, false, false));
 						}
-						return bmp;
+						return _frame.Update(bmp);
 					})
 					.Publish()
 					.RefCount()
@@ -78,7 +71,7 @@ namespace LibDmd.Input.ScreenGrabber
 			Top = rect.Y;
 			Width = rect.Width;
 			Height = rect.Height;
-			SetDimensions(rect.Width, rect.Height);
+			SetDimensions(new Dimensions(rect.Width, rect.Height));
 		}
 
 		private BitmapSource CaptureImage()

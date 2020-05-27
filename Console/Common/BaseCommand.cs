@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Windows.Media;
 using System.Windows.Threading;
 using LibDmd;
 using LibDmd.Common;
@@ -81,6 +80,16 @@ namespace DmdExt.Common
 				}
 			}
 
+			if (config.Pin2DmdXL.Enabled) {
+				var pin2DmdXL = Pin2DmdXL.GetInstance(config.Pin2DmdXL.Delay);
+				if (pin2DmdXL.IsAvailable) {
+					renderers.Add(pin2DmdXL);
+					Logger.Info("Added PIN2DMD XL renderer.");
+				} else {
+					Logger.Warn("Device {0} is not available.", PIN2DMD);
+				}
+			}
+
 			if (config.Pixelcade.Enabled) {
 				var pixelcade = Pixelcade.GetInstance(config.Pixelcade.Port, config.Pixelcade.ColorMatrix);
 				if (pixelcade.IsAvailable) {
@@ -134,7 +143,7 @@ namespace DmdExt.Common
 				DotSize = config.DotSize
 			};
 			var thread = new Thread(() => {
-				
+
 				// Create our context, and install it:
 				SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(CurrentDispatcher));
 

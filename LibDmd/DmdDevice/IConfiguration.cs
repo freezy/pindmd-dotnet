@@ -13,6 +13,7 @@ namespace LibDmd.DmdDevice
 		IPinDmd2Config PinDmd2 { get; }
 		IPinDmd3Config PinDmd3 { get; }
 		IPin2DmdConfig Pin2Dmd { get; }
+		IPin2DmdConfig Pin2DmdXL { get; }
 		IPixelcadeConfig Pixelcade { get; }
 		IVideoConfig Video { get; }
 		IGifConfig Gif { get; }

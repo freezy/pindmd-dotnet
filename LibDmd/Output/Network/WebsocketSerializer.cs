@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media;
 using LibDmd.Common;
+using LibDmd.Frame;
 using NLog;
-using WebSocketSharp;
 
 namespace LibDmd.Output.Network
 {
@@ -15,7 +15,7 @@ namespace LibDmd.Output.Network
 		void OnPalette(Color[] palette);
 		void OnClearColor();
 		void OnClearPalette();
-		void OnDimensions(int width, int height);
+		void OnDimensions(Dimensions dimensions);
 		void OnGameName(string gameName);
 		void OnRgb24(uint timestamp, byte[] frame);
 		void OnColoredGray4(uint timestamp, Color[] palette, byte[][] planes);
@@ -26,8 +26,7 @@ namespace LibDmd.Output.Network
 
 	internal class WebsocketSerializer
 	{
-		public int Width = 128;
-		public int Height = 32;
+		public Dimensions Dimensions = new Dimensions(128, 32);
 
 		private readonly long _startedAt = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
@@ -41,7 +40,7 @@ namespace LibDmd.Output.Network
 
 				var name = Encoding.ASCII.GetString(reader.ReadBytes(start - 1));
 				reader.BaseStream.Seek(1, SeekOrigin.Current);
-				
+
 				switch (name) {
 					case "color": {
 						action.OnColor(ColorUtil.FromInt(reader.ReadInt32()));
@@ -59,15 +58,14 @@ namespace LibDmd.Output.Network
 					case "clearColor": {
 						action.OnClearColor();
 						break;
-					}	
+					}
 					case "clearPalette": {
 						action.OnClearPalette();
 						break;
 					}
 					case "dimensions": {
-						Width = reader.ReadInt32();
-						Height = reader.ReadInt32();
-						action.OnDimensions(Width, Height);
+						Dimensions = new Dimensions(reader.ReadInt32(), reader.ReadInt32());
+						action.OnDimensions(Dimensions);
 						break;
 					}
 					case "gameName": {
@@ -121,7 +119,7 @@ namespace LibDmd.Output.Network
 						for (var i = 0; i < 4; i++) {
 							planes[i] = reader.ReadBytes(planeSize);
 						}
-						action.OnGray4(timestamp, FrameUtil.Join(Width, Height, planes));
+						action.OnGray4(timestamp, FrameUtil.Join(Dimensions, planes));
 						break;
 					}
 					case "gray2Planes": {
@@ -131,7 +129,7 @@ namespace LibDmd.Output.Network
 						for (var i = 0; i < 2; i++) {
 							planes[i] = reader.ReadBytes(planeSize);
 						}
-						action.OnGray2(timestamp, FrameUtil.Join(Width, Height, planes));
+						action.OnGray2(timestamp, FrameUtil.Join(Dimensions, planes));
 						break;
 					}
 				}
@@ -145,7 +143,7 @@ namespace LibDmd.Output.Network
 				.GetBytes("gray" + bitlength + "Planes")
 				.Concat(new byte[] { 0x0 })
 				.Concat(BitConverter.GetBytes((uint)(timestamp - _startedAt)))
-				.Concat(FrameUtil.Split(Width, Height, bitlength, frame).SelectMany(p => p));
+				.Concat(FrameUtil.Split(Dimensions, bitlength, frame).SelectMany(p => p));
 
 			return data.ToArray();
 		}
@@ -194,16 +192,15 @@ namespace LibDmd.Output.Network
 			return data.ToArray();
 		}
 
-		public byte[] SerializeDimensions(int width, int height)
+		public byte[] SerializeDimensions(Dimensions dim)
 		{
-			Width = width;
-			Height = height;
+			Dimensions = dim;
 			var data = Encoding.ASCII
 				.GetBytes("dimensions")
 				.Concat(new byte[] { 0x0 })
-				.Concat(BitConverter.GetBytes(width))
-				.Concat(BitConverter.GetBytes(height));
-			Logger.Info("Sent dimensions to socket {0}x{1}.", width, height);
+				.Concat(BitConverter.GetBytes(dim.Width))
+				.Concat(BitConverter.GetBytes(dim.Height));
+			Logger.Info("Sent dimensions to socket {0}.", dim);
 			return data.ToArray();
 		}
 

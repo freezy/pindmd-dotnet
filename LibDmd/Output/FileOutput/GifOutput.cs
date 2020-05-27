@@ -4,6 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Media.Imaging;
 using LibDmd.Common;
+using LibDmd.Frame;
 using NLog;
 
 namespace LibDmd.Output.FileOutput
@@ -36,7 +37,7 @@ namespace LibDmd.Output.FileOutput
 		/// Renders an image to the display.
 		/// </summary>
 		/// <param name="bmp">Any bitmap</param>
-		public void RenderBitmap(BitmapSource bmp)
+		public void RenderBitmap(BmpFrame bmp)
 		{
 			// since we don't know the frame length before the next frame, we
 			// write the last frame and the current frame when disposing.
@@ -44,7 +45,7 @@ namespace LibDmd.Output.FileOutput
 				_outputGif.WriteFrame(ImageUtil.ConvertToImage(_lastBitmap), Environment.TickCount - _lastTick);
 			}
 
-			_lastBitmap = bmp;
+			_lastBitmap = bmp.Bitmap;
 			_lastTick = Environment.TickCount;
 		}
 
@@ -237,15 +238,15 @@ namespace LibDmd.Output.FileOutput
 			if (includeColorTable) {
 				sourceGif.Position = SourceGlobalColorInfoPosition;
 				// Enabling local color table
-				writer.Write((byte)(sourceGif.ReadByte() & 0x3f | 0x80)); 
+				writer.Write((byte)(sourceGif.ReadByte() & 0x3f | 0x80));
 				WriteColorTable(sourceGif, writer);
 			} else {
 				// Disabling local color table
-				writer.Write((byte)(header[9] & 0x07 | 0x07));            
+				writer.Write((byte)(header[9] & 0x07 | 0x07));
 			}
 
 			// LZW Min Code Size
-			writer.Write(header[10]);                        
+			writer.Write(header[10]);
 
 			// Read/Write image data
 			sourceGif.Position = SourceImageBlockPosition + header.Length;
@@ -261,7 +262,7 @@ namespace LibDmd.Output.FileOutput
 			}
 
 			// Terminator
-			writer.Write((byte)0); 
+			writer.Write((byte)0);
 		}
 		#endregion
 

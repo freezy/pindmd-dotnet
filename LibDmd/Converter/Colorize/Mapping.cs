@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Windows;
 using LibDmd.Common;
 using NLog;
 

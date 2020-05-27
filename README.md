@@ -15,7 +15,7 @@ Currently supported displays:
 - **PinDMD v3**, full RGB support
 - **PinDMD v2**, 4 bit (16 shades) support
 - **PinDMD v1**, 2 bit (4 shades) support
-- **PIN2DMD**, full RGB support
+- **PIN2DMD** and **PIN2DMD XL**, full RGB support
 - **Pixelcade**, full RGB support
 - **Virtual DMD** on a computer monitor, renders nice dots and is useful for 
   debugging.

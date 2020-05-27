@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using LibDmd.Frame;
 using LibDmd.Output;
 using NLog;
 
@@ -68,13 +69,13 @@ namespace LibDmd.Common
 			ForceOnTop();
 		}
 
-		public void SetDimensions(int width, int height)
+		public void SetDimensions(Dimensions dim)
 		{
 			if (_ignoreAr) {
 				return;
 			}
 			Dispatcher.Invoke(() => {
-				_aspectRatio = (double)width / height;
+				_aspectRatio = dim.AspectRatio;
 				if (LockHeight) {
 					Width = Height * _aspectRatio;
 				} else {
@@ -139,7 +140,7 @@ namespace LibDmd.Common
 			//if (!new[] {132, 32, 512 }.Contains(msg)) {
 			//	Logger.Info("hwndSource event: {0}", msg);
 			//}
-			
+
 			switch ((WM)msg) {
 				case WM.WindowPosChanging: {
 						var pos = (WindowPos)Marshal.PtrToStructure(lParam, typeof(WindowPos));
@@ -153,7 +154,7 @@ namespace LibDmd.Common
 							return IntPtr.Zero;
 						}
 
-						// determine what dimension is changed by detecting the mouse position relative to the 
+						// determine what dimension is changed by detecting the mouse position relative to the
 						// window bounds. if gripped in the corner, either will work.
 						if (!_adjustingHeight.HasValue) {
 							var p = GetMousePosition();

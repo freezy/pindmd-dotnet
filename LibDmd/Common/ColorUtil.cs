@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Windows.Media;
+using LibDmd.Frame;
 
 namespace LibDmd.Common
 {
@@ -123,7 +123,7 @@ namespace LibDmd.Common
 
 		/// <summary>
 		/// Sets the palette for a given bit length.
-		/// 
+		///
 		/// Any number of colors can be provided, they are interpolated if they
 		/// don't match the bit length.
 		/// </summary>
@@ -154,7 +154,7 @@ namespace LibDmd.Common
 			var fromRasterPos = 0;
 			var fromRasterSize = 1d / (palette.Length - 1);
 			for (var toRasterPos = 0; toRasterPos < numColors; toRasterPos++) {
-				
+
 				var fromColorPos = fromRasterPos * fromRasterSize;
 				var toColorPos = toRasterPos * toRasterSize;
 				var relativePos = (toColorPos - fromColorPos) / fromRasterSize;
@@ -209,11 +209,11 @@ namespace LibDmd.Common
 			return (color.R << 16) + (color.G << 8) + color.B;
 		}
 
-		public static Color FromInt(int color) 
+		public static Color FromInt(int color)
 		{
 			return Color.FromRgb(
-				(byte)(color >> 16), 
-				(byte)((color >> 8) & 0xff), 
+				(byte)(color >> 16),
+				(byte)((color >> 8) & 0xff),
 				(byte)(color & 0xff)
 			);
 		}
@@ -240,20 +240,21 @@ namespace LibDmd.Common
 
 		/// <summary>
 		/// Returns an RGB24 array with colors from the palette applied to the frame.
-		/// 
-		/// Note that the size of the palette must be as large as the largest integer of 
+		///
+		/// Note that the size of the palette must be as large as the largest integer of
 		/// the frame to color, or in other words, the bit length is given by the size of
 		/// the palette and the values of the frame.
 		/// </summary>
-		/// <param name="width">Width of the frame to color</param>
-		/// <param name="height">Height of the frame to color</param>
+		/// <param name="dim">Dimensions of the frame to color</param>
 		/// <param name="frame">Frame to color, width * height pixels with values from 0 - [size of palette]</param>
 		/// <param name="palette">Colors to use for coloring</param>
 		/// <param name="colorizedFrame">If set, write data into this array</param>
 		/// <returns>Colorized frame</returns>
 		/// <exception cref="ArgumentException">When provided frame and palette are incoherent</exception>
-		public static byte[] ColorizeFrame(int width, int height, byte[] frame, Color[] palette, byte[] colorizedFrame = null)
+		public static byte[] ColorizeFrame(Dimensions dim, byte[] frame, Color[] palette, byte[] colorizedFrame = null)
 		{
+			var width = dim.Width;
+			var height = dim.Height;
 			if (width * height != frame.Length) {
 				throw new ArgumentException("Provided source data must be " + width + "x" + height + " = "  + width * height + " but is " + frame.Length + ".");
 			}

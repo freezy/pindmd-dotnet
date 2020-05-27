@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using LibDmd.Common;
 using LibDmd.DmdDevice;
 
-namespace LibDmd
+namespace LibDmd.Frame
 {
-	public class AlphaNumericFrame
+	public class AlphaNumericFrame : ICloneable
 	{
 		/// <summary>
 		/// The segment data
@@ -37,6 +31,11 @@ namespace LibDmd
 			SegmentData = segData;
 			SegmentDataExtended = segDataExtended;
 			SegmentLayout = layout;
+		}
+
+		public object Clone()
+		{
+			return new AlphaNumericFrame(SegmentLayout, SegmentData, SegmentDataExtended);
 		}
 	}
 }

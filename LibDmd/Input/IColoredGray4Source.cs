@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
+using LibDmd.Frame;
 
 namespace LibDmd.Input
 {
 	/// <summary>
-	/// A source that is able to deliver color-encoded bit planes for four bits 
+	/// A source that is able to deliver color-encoded bit planes for four bits
 	/// per pixel.
 	/// </summary>
 	public interface IColoredGray4Source : ISource

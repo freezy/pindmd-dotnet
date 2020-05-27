@@ -2,8 +2,8 @@
 using System.IO;
 using System.Reactive.Linq;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using LibDmd.Common;
+using LibDmd.Frame;
 using NLog;
 using SharpAvi;
 using SharpAvi.Codecs;
@@ -15,8 +15,7 @@ namespace LibDmd.Output.FileOutput
 	{
 		public string VideoPath { get; set; }
 
-		public int DmdWidth { get; } = 128;
-		public int DmdHeight { get; } = 32;
+		public Dimensions FixedSize { get; } = new Dimensions(128, 32);
 
 		public readonly uint Fps;
 		public string Name { get; } = "Video Writer";
@@ -47,9 +46,9 @@ namespace LibDmd.Output.FileOutput
 			};
 
 			try {
-				_stream = _writer.AddMpeg4VideoStream(DmdWidth, DmdHeight, Fps,
-					quality: 100, 
-					codec: KnownFourCCs.Codecs.X264, 
+				_stream = _writer.AddMpeg4VideoStream(FixedSize.Width, FixedSize.Height, Fps,
+					quality: 100,
+					codec: KnownFourCCs.Codecs.X264,
 					forceSingleThreadedAccess: true
 				);
 				Logger.Info("X264 encoder found.");
@@ -60,7 +59,7 @@ namespace LibDmd.Output.FileOutput
 
 			try {
 				if (_stream == null) {
-					_stream = _writer.AddMotionJpegVideoStream(DmdWidth, DmdHeight,
+					_stream = _writer.AddMotionJpegVideoStream(FixedSize.Width, FixedSize.Height,
 						quality: 100
 					);
 				}
@@ -91,15 +90,15 @@ namespace LibDmd.Output.FileOutput
 			_stream = null;
 		}
 
-		public void RenderRgb24(byte[] frame)
+		public void RenderRgb24(DmdFrame frame)
 		{
 			if (frame == null) {
 				return;
 			}
 			if (_frame == null) {
-				_frame = new byte[DmdWidth * DmdHeight * 4];
+				_frame = new byte[FixedSize.Surface * 4];
 			}
-			ImageUtil.ConvertRgb24ToBgr32(DmdWidth, DmdHeight, frame, _frame);
+			ImageUtil.ConvertRgb24ToBgr32(FixedSize, frame.Data, _frame);
 		}
 
 		public void SetColor(Color color)

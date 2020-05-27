@@ -7,6 +7,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Media.Imaging;
 using LibDmd.Common;
+using LibDmd.Frame;
 using NLog;
 
 namespace LibDmd.Input.FileSystem
@@ -21,7 +22,8 @@ namespace LibDmd.Input.FileSystem
 		public IObservable<Unit> OnResume => _onResume;
 		public IObservable<Unit> OnPause => _onPause;
 
-		private readonly IObservable<BitmapSource> _frames;
+		private readonly BmpFrame _frame = new BmpFrame();
+		private readonly IObservable<BmpFrame> _frames;
 
 		private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -34,8 +36,8 @@ namespace LibDmd.Input.FileSystem
 			var dim = new FrameDimension(gif.FrameDimensionsList[0]);
 			var frameCount = gif.GetFrameCount(dim);
 
-			SetDimensions(gif.Width, gif.Height);
-			
+			SetDimensions(new Dimensions(gif.Width, gif.Height));
+
 			if (ImageAnimator.CanAnimate(gif)) {
 				var gifFrames = new GifFrame[frameCount];
 				var index = 0;
@@ -51,8 +53,8 @@ namespace LibDmd.Input.FileSystem
 
 				_frames = gifFrames
 					.ToObservable()
-					.Delay(frame => Observable.Timer(TimeSpan.FromMilliseconds(frame.Time)))
-					.Select(frame => frame.Bitmap);
+					.Delay(gifFrame => Observable.Timer(TimeSpan.FromMilliseconds(gifFrame.Time)))
+					.Select(gifFrame => _frame.Update(gifFrame.Bitmap));
 
 				// is looped?
 				if (BitConverter.ToInt16(gif.GetPropertyItem(20737).Value, 0) != 1) {
@@ -63,11 +65,11 @@ namespace LibDmd.Input.FileSystem
 				_frames = _frames.Publish().RefCount();
 
 			} else {
-				_frames = new BehaviorSubject<BitmapSource>(ImageUtil.ConvertToBitmap(gif));
+				_frames = new BehaviorSubject<BmpFrame>(new BmpFrame(ImageUtil.ConvertToBitmap(gif)));
 			}
 		}
 
-		public IObservable<BitmapSource> GetBitmapFrames()
+		public IObservable<BmpFrame> GetBitmapFrames()
 		{
 			return _frames;
 		}

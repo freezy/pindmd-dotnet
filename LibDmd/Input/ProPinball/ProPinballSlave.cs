@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Media;
+using LibDmd.Frame;
 using NLog;
 
 namespace LibDmd.Input.ProPinball
@@ -27,8 +28,8 @@ namespace LibDmd.Input.ProPinball
 
 		private readonly uint _messageBufferSize = 392;
 		private ProPinballBridge.ProPinballDmd _bridge;
-		private IObservable<DMDFrame> _framesGray4;
-		private DMDFrame _dmdFrame = new DMDFrame();
+		private IObservable<DmdFrame> _framesGray4;
+		private DmdFrame _dmdFrame = new DmdFrame();
 
 		private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -40,7 +41,7 @@ namespace LibDmd.Input.ProPinball
 			}
 		}
 
-		public IObservable<DMDFrame> GetGray4Frames()
+		public IObservable<DmdFrame> GetGray4Frames()
 		{
 			if (_framesGray4 != null) {
 				return _framesGray4;
@@ -48,15 +49,15 @@ namespace LibDmd.Input.ProPinball
 			CreateBridge();
 
 			Logger.Info("Subscribing to Pro Pinball's message queue...");
-			_framesGray4 = Observable.Create<DMDFrame>(o => {
+			_framesGray4 = Observable.Create<DmdFrame>(o => {
 
-				var len = Dimensions.Value.Width * Dimensions.Value.Height;
+				var len = Dimensions.Value.Surface;
 
 				// this is blocking, so use a new thread
 				var thread = new Thread(() => {
 					unsafe {
 						_bridge.GetFrames(frame => {
-							var arr = _dmdFrame.Update(Dimensions.Value.Width, Dimensions.Value.Height, new byte[len]);
+							var arr = _dmdFrame.Update(Dimensions.Value, new byte[len]);
 							Marshal.Copy((IntPtr)frame, arr.Data, 0, len);
 							o.OnNext(arr);
 

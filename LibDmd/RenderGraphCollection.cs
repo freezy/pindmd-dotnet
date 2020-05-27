@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Reactive.Subjects;
 using System.Windows.Media;
 using LibDmd.Converter;
+using LibDmd.Frame;
 using LibDmd.Input;
 using LibDmd.Output;
-using LibDmd.Output.FileOutput;
 
 namespace LibDmd
 {
 	/// <summary>
 	/// Groups multiple render graphs.
 	/// </summary>
-	/// 
+	///
 	/// <remarks>
 	/// This should be used as soon as more than one render graph is created,
 	/// since it also manages common properties such as the dimension observable
@@ -20,7 +20,7 @@ namespace LibDmd
 	/// </remarks>
 	public class RenderGraphCollection : IDisposable
 	{
-		private readonly List<RenderGraph> _graphs = new List<RenderGraph>(); 
+		private readonly List<RenderGraph> _graphs = new List<RenderGraph>();
 		private readonly List<IRgb24Destination> _rgb24Destinations = new List<IRgb24Destination>();
 		private readonly List<IResizableDestination> _resizableDestinations = new List<IResizableDestination>();
 		private readonly List<IConverter> _converters = new List<IConverter>();
@@ -38,9 +38,11 @@ namespace LibDmd
 		public void Add(RenderGraph renderGraph)
 		{
 			// use a common observable for all sources so we get proper notification when any of them changes size
+			if (renderGraph.Source.Dimensions != null) {
+				_dimensions.OnNext(renderGraph.Source.Dimensions.Value);
+			}
 			renderGraph.Source.Dimensions = _dimensions;
-			var converter = renderGraph.Converter as ISource;
-			if (converter != null) {
+			if (renderGraph.Converter is ISource converter) {
 				converter.Dimensions = _dimensions;
 			}
 			_graphs.Add(renderGraph);
@@ -67,7 +69,7 @@ namespace LibDmd
 				_renderer.Init();
 				return this;
 			}
-			_resizableDestinations.ForEach(dest => _dimensions.Subscribe(dim => dest.SetDimensions(dim.Width, dim.Height)));
+			_resizableDestinations.ForEach(dest => _dimensions.Subscribe(dest.SetDimensions));
 			_converters.ForEach(converter => converter.Init());
 			return this;
 		}
@@ -81,7 +83,7 @@ namespace LibDmd
 				_graphs.ForEach(graph => graph.StartRendering(onCompleted, onError));
 			}
 		}
-		
+
 		public void StartRendering()
 		{
 			if (_renderer != null) {
@@ -132,7 +134,7 @@ namespace LibDmd
 		{
 			if (_renderer != null) {
 				_renderer.Dispose();
-			
+
 			} else {
 				_rgb24Destinations.Clear();
 				_graphs.ForEach(graph => graph.Dispose());

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
+using LibDmd.Frame;
 using NLog;
 
 namespace LibDmd.Input
@@ -18,22 +15,22 @@ namespace LibDmd.Input
 
 		private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-		public void SetDimensions(int width, int height)
+		public void SetDimensions(Dimensions dim)
 		{
 			if (Dimensions == null) {
 				return;
 			}
 
-			if (width != Dimensions.Value.Width || height != Dimensions.Value.Height) {
-				Logger.Info("{4} received new dimensions: {0}x{1} => {2}x{3}.", Dimensions.Value.Width, Dimensions.Value.Height, width, height, Name);
-				Dimensions.OnNext(new Dimensions { Width = width, Height = height });
+			if (dim != Dimensions.Value) {
+				Logger.Info("{2} received new dimensions: {0} => {1}.", Dimensions, dim, Name);
+				Dimensions.OnNext(dim);
 			}
 		}
 
 		// Set SeDebugPrivilege in our proecess token, to allow debugger
 		// level access to another process's memory space.  This is used
-		// for input classes that read DMD data directly from memory in 
-		// the target game process, such as Pinball Arcade DX11 and 
+		// for input classes that read DMD data directly from memory in
+		// the target game process, such as Pinball Arcade DX11 and
 		// Pinball FX3.
 		protected void SetDebugPrivilege()
 		{
@@ -72,7 +69,7 @@ namespace LibDmd.Input
 				}
 			}
 
-			// Enable debug privilege in our token.  Allow this to fail silently, 
+			// Enable debug privilege in our token.  Allow this to fail silently,
 			// as we might be able to exercise the rights this privilege would have
 			// granted without explicitly setting it.  We'll find out when we try
 			// the protected operation, and generate suitable diagnostics at that

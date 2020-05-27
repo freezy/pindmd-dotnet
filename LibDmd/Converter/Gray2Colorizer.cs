@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Windows.Media;
 using LibDmd.Common;
 using LibDmd.Converter.Colorize;
+using LibDmd.Frame;
 using LibDmd.Input;
 using NLog;
 
@@ -18,9 +16,10 @@ namespace LibDmd.Converter
 		public FrameFormat From { get; } = FrameFormat.Gray2;
 		public IObservable<Unit> OnResume { get; }
 		public IObservable<Unit> OnPause { get; }
-		public bool Has128x32Animation { get; set; }
-		protected readonly Subject<ColoredFrame> ColoredGray2AnimationFrames = new Subject<ColoredFrame>();
-		protected readonly Subject<ColoredFrame> ColoredGray4AnimationFrames = new Subject<ColoredFrame>();
+		public bool Has128x32Animation { get; private set; }
+
+		private readonly Subject<ColoredFrame> _coloredGray2AnimationFrames = new Subject<ColoredFrame>();
+		private readonly Subject<ColoredFrame> _coloredGray4AnimationFrames = new Subject<ColoredFrame>();
 
 		/// <summary>
 		/// Datä vomer uism .pal-Feil uisägläsä hend
@@ -43,7 +42,7 @@ namespace LibDmd.Converter
 		private Palette _palette;
 
 		/// <summary>
-		/// Dr aktueui Palettä-Index. Da wird bruicht damit s PIN2DMD schnäuer cha 
+		/// Dr aktueui Palettä-Index. Da wird bruicht damit s PIN2DMD schnäuer cha
 		/// Palettä wächslä, wuis d Palettä a sich schon hett und nur nu än Index
 		/// bruicht.
 		/// </summary>
@@ -78,13 +77,13 @@ namespace LibDmd.Converter
 		{
 		}
 
-		public void Convert(DMDFrame frame)
+		public void Convert(DmdFrame frame)
 		{
-			var planes = FrameUtil.Split(Dimensions.Value.Width, Dimensions.Value.Height, 2, frame.Data);
+			var planes = FrameUtil.Split(Dimensions.Value, 2, frame.Data);
 
 			if (_coloring.Mappings != null)
 			{
-				if (frame is RawDMDFrame vd && vd.RawPlanes.Length > 0)
+				if (frame is RawFrame vd && vd.RawPlanes.Length > 0)
 				{
 					// Reverse bit order for non-WPC.
 					TriggerAnimation(vd.RawPlanes, vd.RawPlanes.Length > 3);
@@ -97,12 +96,12 @@ namespace LibDmd.Converter
 
 			// Wenn än Animazion am laifä isch de wirds Frame dr Animazion zuägschpiut wos Resultat de säubr uisäschickt
 			if (_activeAnimation != null) {
-				_activeAnimation.NextFrame(planes, AnimationFinished);
+				_activeAnimation.NextFrame(frame.Dimensions, planes, AnimationFinished);
 				return;
 			}
 
 			// Sisch diräkt uisgäh
-			Render(planes);
+			Render(frame.Dimensions, planes);
 		}
 
 		/// <summary>
@@ -110,7 +109,7 @@ namespace LibDmd.Converter
 		/// </summary>
 		/// <param name="planes">S Buid zum iberpriäfä
 		/// </param>
-		/// 
+		///
 		public void ActivateMapping(Mapping mapping)
 		{
 			if (mapping.Mode == SwitchMode.Event)
@@ -118,7 +117,7 @@ namespace LibDmd.Converter
 				return;
 			}
 
-			// If same LCM scene, no need to stop/start 
+			// If same LCM scene, no need to stop/start
 			if (_activeAnimation != null && _activeAnimation.SwitchMode == SwitchMode.LayeredColorMask && mapping.Mode == SwitchMode.LayeredColorMask && mapping.Offset == _activeAnimation.Offset)
 			{
 				return;
@@ -220,7 +219,7 @@ namespace LibDmd.Converter
 			var maskSize = Dimensions.Value.Width * Dimensions.Value.Height / 8;
 
 			var checksum = FrameUtil.Checksum(plane, reverse);
-				
+
 			NoMaskCRC = checksum;
 
 			var mapping = _coloring.FindMapping(checksum);
@@ -229,9 +228,9 @@ namespace LibDmd.Converter
 			}
 
 			// Wenn kä Maskä definiert, de nächschti Bitplane
-			if (_coloring.Masks == null || _coloring.Masks.Length <= 0) 
+			if (_coloring.Masks == null || _coloring.Masks.Length <= 0)
 				return null;
-		
+
 			// Sisch gemmr Maskä fir Maskä durä und luägid ob da eppis passt
 			var maskedPlane = new byte[maskSize];
 			foreach (var mask in _coloring.Masks) {
@@ -241,24 +240,25 @@ namespace LibDmd.Converter
 					return mapping;
 				}
 			}
-			
+
 			return null;
 		}
 
 		/// <summary>
 		/// Tuäts Biud uif diä entschprächändä Sourcä uisgäh.
 		/// </summary>
+		/// <param name="dim">Grehssi</param>
 		/// <param name="planes">S Biud zum uisgäh</param>
-		private void Render(byte[][] planes)
+		private void Render(Dimensions dim, byte[][] planes)
 		{
 			// Wenns kä Erwiiterig gä hett, de gäbemer eifach d Planes mit dr Palettä zrugg
 			if (planes.Length == 2) {
-				ColoredGray2AnimationFrames.OnNext(new ColoredFrame(planes, _palette.GetColors(planes.Length), _paletteIndex));
+				_coloredGray2AnimationFrames.OnNext(new ColoredFrame(dim, planes, _palette.GetColors(planes.Length), _paletteIndex));
 			}
 
 			// Faus scho, de schickermr s Frame uifd entsprächendi Uisgab faus diä gsetzt isch
 			if (planes.Length == 4) {
-				ColoredGray4AnimationFrames.OnNext(new ColoredFrame(planes, _palette.GetColors(planes.Length), _paletteIndex));
+				_coloredGray4AnimationFrames.OnNext(new ColoredFrame(dim, planes, _palette.GetColors(planes.Length), _paletteIndex));
 			}
 		}
 
@@ -296,12 +296,12 @@ namespace LibDmd.Converter
 
 		public IObservable<ColoredFrame> GetColoredGray2Frames()
 		{
-			return ColoredGray2AnimationFrames;
+			return _coloredGray2AnimationFrames;
 		}
 
 		public IObservable<ColoredFrame> GetColoredGray4Frames()
 		{
-			return ColoredGray4AnimationFrames;
+			return _coloredGray4AnimationFrames;
 		}
 	}
 }
