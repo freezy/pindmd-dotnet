@@ -1,210 +1,72 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{3E9138DA-A0A5-449E-BFD2-965E38B9182E}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PinMameDevice</RootNamespace>
-    <AssemblyName>DmdDevice</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release - Coloring Disabled|x86'">
-    <OutputPath>bin\x86\Release-NoColor\</OutputPath>
-    <DefineConstants>TRACE;DISABLE_COLORING</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release - Coloring Disabled|x64'">
-    <OutputPath>bin\x64\Release-NoColor\</OutputPath>
-    <DefineConstants>TRACE;DISABLE_COLORING</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.4.12\lib\net45\NLog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="RGiesecke.DllExport.Metadata, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8f52d83c1a22df51, processorArchitecture=MSIL">
-      <HintPath>..\packages\UnmanagedExports.1.2.7\lib\net\RGiesecke.DllExport.Metadata.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Reactive.Interfaces, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-Interfaces.2.2.5\lib\net45\System.Reactive.Interfaces.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Reactive.Linq, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="websocket-sharp">
-      <HintPath>..\packages\WebSocketSharp.1.0.3-rc11\lib\websocket-sharp.dll</HintPath>
-    </Reference>
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\VersionAssemblyInfo.cs">
-      <Link>Properties\VersionAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="DmdDevice.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="DmdDevice.log.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <None Include="app.config" />
-    <None Include="DmdDevice.ini" />
-    <None Include="packages.config" />
-    <None Include="README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="FodyWeavers.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LibDmd\LibDmd.csproj">
-      <Project>{0318CC71-57C6-4F46-9495-6CACF0CF1505}</Project>
-      <Name>LibDmd</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Fody.1.29.4\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.29.4\build\dotnet\Fody.targets'))" />
-  </Target>
-  <PropertyGroup>
-    <PostBuildEvent>if "$(Platform)"=="x64" (
-    copy /Y "$(TargetDir)$(TargetName).dll" "$(TargetDir)$(TargetName)64.dll"
-)
-
-if not exist "%25VPM_HOME%25" goto done
-
-if "$(Platform)"=="x64" (
-    echo Copying $(TargetName).dll to %25VPM_HOME%25\$(TargetName)64.dll...
-    copy /Y "$(TargetDir)$(TargetName).dll" "%25VPM_HOME%25\$(TargetName)64.dll"
-) else (
-    echo Copying $(TargetName).dll to %25VPM_HOME%25...
-    copy /Y "$(TargetDir)$(TargetName).dll" "%25VPM_HOME%25"
-    copy /Y "$(TargetDir)$(TargetName).pdb" "%25VPM_HOME%25"
-    copy /Y "$(TargetDir)LibDMD.dll" "%25VPM_HOME%25"
-    copy /Y "$(TargetDir)LibDMD.pdb" "%25VPM_HOME%25"
-
-)
-echo Copying DmdDevice.log.config to %25VPM_HOME%25...
-copy /Y "$(TargetDir)DmdDevice.log.config" "%25VPM_HOME%25"
-
-:done</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <DllExportIdent>91FC0343-29D4-45DB-97A1-458B52834E48</DllExportIdent>
-    <DllExportMetaLibName>DllExport.dll</DllExportMetaLibName>
-    <DllExportNamespace>PinMameDevice</DllExportNamespace>
-    <DllExportDDNSCecil>true</DllExportDDNSCecil>
-    <DllExportSkipOnAnyCpu>false</DllExportSkipOnAnyCpu>
-    <DllExportPlatform>Auto</DllExportPlatform>
-    <DllExportOrdinalsBase>1</DllExportOrdinalsBase>
-    <DllExportGenExpLib>false</DllExportGenExpLib>
-    <DllExportOurILAsm>false</DllExportOurILAsm>
-    <DllExportSysObjRebase>false</DllExportSysObjRebase>
-    <DllExportLeaveIntermediateFiles>false</DllExportLeaveIntermediateFiles>
-    <DllExportTimeout>30000</DllExportTimeout>
-    <DllExportPeCheck>2</DllExportPeCheck>
-    <DllExportPatches>0</DllExportPatches>
-    <DllExportPreProcType>0</DllExportPreProcType>
-    <DllExportPostProcType>0</DllExportPostProcType>
-  </PropertyGroup>
-  <ImportGroup Label=".NET DllExport">
-    <Import Project="$(SolutionDir)packages\DllExport.1.7.4\tools\net.r_eg.DllExport.targets" Condition="Exists($([MSBuild]::Escape('$(SolutionDir)packages\DllExport.1.7.4\tools\net.r_eg.DllExport.targets')))" Label="8337224c9ad9e356" />
-  </ImportGroup>
-  <Target Name="DllExportRestorePkg" BeforeTargets="PrepareForBuild">
-    <Error Condition="!Exists('$(SolutionDir)DllExport.bat')" Text="DllExport.bat is not found. Path: '$(SolutionDir)' - https://github.com/3F/DllExport" />
-    <Exec Condition="('$(DllExportModImported)' != 'true' Or !Exists('$(SolutionDir)packages\DllExport.1.7.4\tools\net.r_eg.DllExport.targets')) And Exists('$(SolutionDir)DllExport.bat')" Command=".\DllExport.bat  -action Restore" WorkingDirectory="$(SolutionDir)" />
-    <MSBuild Condition="'$(DllExportModImported)' != 'true'" Projects="$(SolutionDir)packages\DllExport.1.7.4\tools\net.r_eg.DllExport.targets" Targets="DllExportMetaXBaseTarget" Properties="TargetFramework=$(TargetFramework)">
-      <Output TaskParameter="TargetOutputs" PropertyName="DllExportMetaXBase" />
-    </MSBuild>
-    <ItemGroup>
-      <Reference Include="DllExport, PublicKeyToken=8337224c9ad9e356">
-        <HintPath>$(SolutionDir)packages\DllExport.1.7.4\gcache\$(DllExportMetaXBase)\$(DllExportNamespace)\$(DllExportMetaLibName)</HintPath>
-        <Private>False</Private>
-        <SpecificVersion>False</SpecificVersion>
-      </Reference>
-    </ItemGroup>
-  </Target>
-  <Target Name="DllExportRPkgDynamicImport" BeforeTargets="PostBuildEvent" DependsOnTargets="GetFrameworkPaths" Condition="'$(DllExportModImported)' != 'true' And '$(DllExportRPkgDyn)' != 'false'">
-    <MSBuild BuildInParallel="true" UseResultsCache="true" Projects="$(MSBuildProjectFullPath)" Properties="DllExportRPkgDyn=true" Targets="Build" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<Platforms>x86;x64</Platforms>
+		<OutputType>Library</OutputType>
+		<RootNamespace>PinMameDevice</RootNamespace>
+		<AssemblyName>DmdDevice</AssemblyName>
+		<ProjectGuid>{3E9138DA-A0A5-449E-BFD2-965E38B9182E}</ProjectGuid>
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<FileAlignment>512</FileAlignment>
+		<UseWPF>true</UseWPF>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\LibDmd\LibDmd.csproj" />
+		<PackageReference Include="Costura.Fody" Version="5.3.0" PrivateAssets="all" />
+		<PackageReference Include="Fody" Version="6.5.1" PrivateAssets="all" />
+		<PackageReference Include="DllExport">
+			<Version>1.7.4</Version>
+			<Visible>false</Visible>
+			<Wz>1</Wz>
+		</PackageReference>
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="..\VersionAssemblyInfo.cs" Link="Properties\VersionAssemblyInfo.cs" />
+		<Content Include="DmdDevice.log.config" CopyToOutputDirectory="Always" />
+		<None Include="DmdDevice.ini" />
+		<None Include="README.md" />
+		<!-- <Content Include="FodyWeavers.xml" /> -->
+	</ItemGroup>
+	<PropertyGroup>
+		<DllExportIdent>91FC0343-29D4-45DB-97A1-458B52834E48</DllExportIdent>
+		<DllExportMetaLibName>DllExport.dll</DllExportMetaLibName>
+		<DllExportNamespace>PinMameDevice</DllExportNamespace>
+		<DllExportDDNSCecil>true</DllExportDDNSCecil>
+		<DllExportSkipOnAnyCpu>false</DllExportSkipOnAnyCpu>
+		<DllExportPlatform>Auto</DllExportPlatform>
+		<DllExportOrdinalsBase>1</DllExportOrdinalsBase>
+		<DllExportGenExpLib>false</DllExportGenExpLib>
+		<DllExportOurILAsm>false</DllExportOurILAsm>
+		<DllExportSysObjRebase>false</DllExportSysObjRebase>
+		<DllExportLeaveIntermediateFiles>false</DllExportLeaveIntermediateFiles>
+		<DllExportTimeout>30000</DllExportTimeout>
+		<DllExportPeCheck>2</DllExportPeCheck>
+		<DllExportPatches>0</DllExportPatches>
+		<DllExportPreProcType>0</DllExportPreProcType>
+		<DllExportPostProcType>0</DllExportPostProcType>
+	</PropertyGroup>
+	<ImportGroup Label=".NET DllExport">
+		<Import Project="$(SolutionDir)packages\DllExport.1.7.4\tools\net.r_eg.DllExport.targets" Condition="Exists($([MSBuild]::Escape('$(SolutionDir)packages\DllExport.1.7.4\tools\net.r_eg.DllExport.targets')))" Label="8337224c9ad9e356" />
+	</ImportGroup>
+	<Target Name="DllExportRestorePkg" BeforeTargets="PrepareForBuild">
+		<Error Condition="!Exists('$(SolutionDir)DllExport.bat')" Text="DllExport.bat is not found. Path: '$(SolutionDir)' - https://github.com/3F/DllExport" />
+		<Exec Condition="('$(DllExportModImported)' != 'true' Or !Exists('$(SolutionDir)packages\DllExport.1.7.4\tools\net.r_eg.DllExport.targets')) And Exists('$(SolutionDir)DllExport.bat')" Command=".\DllExport.bat  -action Restore" WorkingDirectory="$(SolutionDir)" />
+		<MSBuild Condition="'$(DllExportModImported)' != 'true'" Projects="$(SolutionDir)packages\DllExport.1.7.4\tools\net.r_eg.DllExport.targets" Targets="DllExportMetaXBaseTarget" Properties="TargetFramework=$(TargetFramework)">
+			<Output TaskParameter="TargetOutputs" PropertyName="DllExportMetaXBase" />
+		</MSBuild>
+		<ItemGroup>
+		<Reference Include="DllExport, PublicKeyToken=8337224c9ad9e356">
+			<HintPath>$(SolutionDir)packages\DllExport.1.7.4\gcache\$(DllExportMetaXBase)\$(DllExportNamespace)\$(DllExportMetaLibName)</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		</ItemGroup>
+	</Target>
+	<Target Name="DllExportRPkgDynamicImport" BeforeTargets="PostBuildEvent" DependsOnTargets="GetFrameworkPaths" Condition="'$(DllExportModImported)' != 'true' And '$(DllExportRPkgDyn)' != 'false'">
+		<MSBuild BuildInParallel="true" UseResultsCache="true" Projects="$(MSBuildProjectFullPath)" Properties="DllExportRPkgDyn=true" Targets="Build" />
+	</Target>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="if &quot;$(Platform)&quot;==&quot;x64&quot; (&#xD;&#xA;  copy /Y &quot;$(TargetDir)$(TargetName).dll&quot; &quot;$(TargetDir)$(TargetName)64.dll&quot;&#xD;&#xA;)&#xD;&#xA;if not exist &quot;%25VPM_HOME%25&quot; goto done&#xD;&#xA;&#xD;&#xA;if &quot;$(Platform)&quot;==&quot;x64&quot; (&#xD;&#xA;  echo Copying $(TargetName).dll to %25VPM_HOME%25\$(TargetName)64.dll...&#xD;&#xA;  copy /Y &quot;$(TargetDir)$(TargetName).dll&quot; &quot;%25VPM_HOME%25\$(TargetName)64.dll&quot;&#xD;&#xA;) else (&#xD;&#xA;  echo Copying $(TargetName).dll to %25VPM_HOME%25...&#xD;&#xA;  copy /Y &quot;$(TargetDir)$(TargetName).dll&quot; &quot;%25VPM_HOME%25&quot;&#xD;&#xA;  copy /Y &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;%25VPM_HOME%25&quot;&#xD;&#xA;  copy /Y &quot;$(TargetDir)LibDMD.dll&quot; &quot;%25VPM_HOME%25&quot;&#xD;&#xA; copy /Y &quot;$(TargetDir)LibDMD.pdb&quot; &quot;%25VPM_HOME%25&quot;&#xD;&#xA;)&#xD;&#xA;echo Copying DmdDevice.log.config to %25VPM_HOME%25...&#xD;&#xA;copy /Y &quot;$(TargetDir)DmdDevice.log.config&quot; &quot;%25VPM_HOME%25&quot;&#xD;&#xA;:done" />
+	</Target>
 </Project>

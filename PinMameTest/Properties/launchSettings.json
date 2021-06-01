@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PinMameTest": {
+      "commandName": "Project",
+      "commandLineArgs": "VPinMame"
+    }
+  }
+}

@@ -1,555 +1,157 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0318CC71-57C6-4F46-9495-6CACF0CF1505}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LibDmd</RootNamespace>
-    <AssemblyName>LibDmd</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;PLATFORM_X86</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release - Coloring Disabled|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;PLATFORM_X86</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE;PLATFORM_X64</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release - Coloring Disabled|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE;PLATFORM_X64</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="CommandLine, Version=1.9.71.2, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
-    </Reference>
-    <Reference Include="EngineIoClientDotNet, Version=0.9.22.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\EngineIoClientDotNet.0.9.22\lib\net45\EngineIoClientDotNet.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="FTD2XX_NET, Version=1.0.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FTD2XX.Net.1.0.14\lib\FTD2XX_NET.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="INIFileParser, Version=2.3.0.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
-      <HintPath>..\packages\ini-parser.2.3.0\lib\net20\INIFileParser.dll</HintPath>
-    </Reference>
-    <Reference Include="LibUsbDotNet, Version=2.2.8.104, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibUsbDotNet.2.2.8\lib\LibUsbDotNet.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="MimeTypeMap, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MediaTypeMap.2.1.0.0\lib\net40\MimeTypeMap.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Mindscape.Raygun4Net, Version=5.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mindscape.Raygun4Net.5.5.1\lib\net40\Mindscape.Raygun4Net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Mindscape.Raygun4Net4, Version=5.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mindscape.Raygun4Net.5.5.1\lib\net40\Mindscape.Raygun4Net4.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.4.12\lib\net45\NLog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="SharpAvi, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpAvi.2.1.0\lib\net45\SharpAvi.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SharpGL, Version=3.1.1.0, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpGL.3.1.1\lib\net45\SharpGL.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpGL.SceneGraph, Version=3.1.1.0, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpGL.SceneGraph.3.1.1\lib\net45\SharpGL.SceneGraph.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpGL.WPF, Version=3.1.1.0, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpGL.WPF.3.1.1\lib\net45\SharpGL.WPF.dll</HintPath>
-    </Reference>
-    <Reference Include="SkiaSharp, Version=1.68.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>..\packages\SkiaSharp.1.68.0-preview28\lib\net45\SkiaSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="SkiaSharp.Extended.Svg, Version=1.60.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>..\packages\SkiaSharp.Svg.1.60.0\lib\portable-net45+win8+wp8+wpa81\SkiaSharp.Extended.Svg.dll</HintPath>
-    </Reference>
-    <Reference Include="SkiaSharp.Views.Desktop, Version=1.68.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>..\packages\SkiaSharp.Views.1.68.0-preview28\lib\net45\SkiaSharp.Views.Desktop.dll</HintPath>
-    </Reference>
-    <Reference Include="SkiaSharp.Views.Gtk, Version=1.68.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>..\packages\SkiaSharp.Views.1.68.0-preview28\lib\net45\SkiaSharp.Views.Gtk.dll</HintPath>
-    </Reference>
-    <Reference Include="SkiaSharp.Views.WPF, Version=1.68.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>..\packages\SkiaSharp.Views.1.68.0-preview28\lib\net45\SkiaSharp.Views.WPF.dll</HintPath>
-    </Reference>
-    <Reference Include="SocketIoClientDotNet, Version=0.9.13.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SocketIoClientDotNet.0.9.13\lib\net45\SocketIoClientDotNet.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Reactive.Interfaces, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-Interfaces.2.2.5\lib\net45\System.Reactive.Interfaces.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Reactive.Linq, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="websocket-sharp, Version=1.0.2.59611, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebSocketSharp.1.0.3-rc11\lib\websocket-sharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="WebSocket4Net, Version=0.14.1.0, Culture=neutral, PublicKeyToken=eb4e154b696bf72a, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebSocket4Net.0.14.1\lib\net45\WebSocket4Net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="WriteableBitmapEx.Wpf, Version=1.5.0.0, Culture=neutral, PublicKeyToken=50375ca6144f1c69, processorArchitecture=MSIL">
-      <HintPath>..\packages\WriteableBitmapEx.1.5.0.0\lib\net40\WriteableBitmapEx.Wpf.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock, Version=3.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.3.4.0\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=3.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.3.4.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=3.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.3.4.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=3.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.3.4.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.DataGrid, Version=3.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.3.4.0\lib\net40\Xceed.Wpf.DataGrid.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.Toolkit, Version=3.4.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.3.4.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\VersionAssemblyInfo.cs">
-      <Link>Properties\VersionAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="AlphaNumericFrame.cs" />
-    <Compile Include="ColoredFrame.cs" />
-    <Compile Include="Common\CultureUtil.cs" />
-    <Compile Include="DmdDevice\IConfiguration.cs" />
-    <Compile Include="Input\Frame.cs" />
-    <Compile Include="Input\FutureDmd\FutureDmdSink.cs" />
-    <Compile Include="Input\Network\WebsocketColoredGray4Source.cs" />
-    <Compile Include="Input\Network\WebsocketColoredGray2Source.cs" />
-    <Compile Include="Input\Network\WebsocketGray4Source .cs" />
-    <Compile Include="Input\Network\WebsocketRgb24Source.cs" />
-    <Compile Include="Input\Network\WebsocketServer.cs" />
-    <Compile Include="Input\Network\WebsocketGray2Source.cs" />
-    <Compile Include="Output\Network\NetworkStream.cs" />
-    <Compile Include="Output\Network\WebsocketSerializer.cs" />
-    <Compile Include="Output\Pixelcade\Pixelcade.cs" />
-    <Compile Include="Output\Virtual\AlphaNumeric\AlphaNumericLayerSetting.xaml.cs">
-      <DependentUpon>AlphaNumericLayerSetting.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Output\Virtual\AlphaNumeric\AlphaNumericPainter.cs" />
-    <Compile Include="Output\Virtual\AlphaNumeric\AlphaNumericSettings.xaml.cs">
-      <DependentUpon>AlphaNumericSettings.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Common\VirtualAlphaNumericDisplay.xaml.cs">
-      <DependentUpon>VirtualAlphaNumericDisplay.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Common\VirtualDisplay.cs" />
-    <Compile Include="DmdDevice\AlphaNumeric.cs" />
-    <Compile Include="Common\ColorUtil.cs" />
-    <Compile Include="Common\FrameUtil.cs" />
-    <Compile Include="Common\HeatShrink\HeatShrinkDecoder.cs" />
-    <Compile Include="Common\HeatShrink\HeatShrinkEncoder.cs" />
-    <Compile Include="Common\HeatShrink\OutputInfo.cs" />
-    <Compile Include="Common\HeatShrink\Result.cs" />
-    <Compile Include="Common\ImageUtil.cs" />
-    <Compile Include="Common\InteropUtil.cs" />
-    <Compile Include="Common\Profiler.cs" />
-    <Compile Include="Common\TransformationUtil.cs" />
-    <Compile Include="Common\VirtualDmd.xaml.cs">
-      <DependentUpon>VirtualDmd.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Converter\Colorize\AnimationFrame.cs" />
-    <Compile Include="Converter\Colorize\AnimationPlane.cs" />
-    <Compile Include="Converter\Colorize\AnimationSet.cs" />
-    <Compile Include="Converter\Colorize\SwitchMode.cs" />
-    <Compile Include="Converter\Colorize\VniAnimation.cs" />
-    <Compile Include="Converter\Colorize\Animation.cs" />
-    <Compile Include="Converter\Colorize\VniAnimationFrame.cs" />
-    <Compile Include="Converter\Colorize\VniAnimationPlane.cs" />
-    <Compile Include="Converter\Colorize\VniAnimationSet.cs" />
-    <Compile Include="Converter\Gray2Colorizer.cs" />
-    <Compile Include="Converter\Gray4Colorizer.cs" />
-    <Compile Include="Converter\IConverter.cs" />
-    <Compile Include="DmdDevice\Configuration.cs" />
-    <Compile Include="DmdDevice\DmdDevice.cs" />
-    <Compile Include="DmdDevice\IDmdDevice.cs" />
-    <Compile Include="Input\AbstractSource.cs" />
-    <Compile Include="Input\FileSystem\GifSource.cs" />
-    <Compile Include="Input\FileSystem\ImageSource.cs" />
-    <Compile Include="Input\IBitmapSource.cs" />
-    <Compile Include="Input\IColoredGray4Source.cs" />
-    <Compile Include="Input\IColoredGray2Source.cs" />
-    <Compile Include="Input\IGray2Source.cs" />
-    <Compile Include="Input\IAlphaNumericSource.cs" />
-    <Compile Include="Input\IRgb24Source.cs" />
-    <Compile Include="Input\IGray4Source.cs" />
-    <Compile Include="Input\MemoryGrabber.cs" />
-    <Compile Include="Input\MemoryGrabberBase.cs" />
-    <Compile Include="Input\PinballFX\PinballFX3MemoryGrabber.cs" />
-    <Compile Include="Input\PinballFX\PinballFX3Grabber.cs" />
-    <Compile Include="Input\PinballFX\PinballFX2Grabber.cs" />
-    <Compile Include="Input\PinMame\VpmAlphaNumericSource.cs" />
-    <Compile Include="Input\PinMame\VpmRgb24Source.cs" />
-    <Compile Include="Input\PinMame\VpmGray4Source.cs" />
-    <Compile Include="Input\PinMame\VpmGray2Source.cs" />
-    <Compile Include="Input\FileSystem\PassthroughSource.cs" />
-    <Compile Include="Input\ProPinball\ProPinballSlave.cs" />
-    <Compile Include="Output\FileOutput\GifOutput.cs" />
-    <Compile Include="Output\IAlphaNumericDestination.cs" />
-    <Compile Include="Output\PinUp\PinUpOutput.cs" />
-    <Compile Include="Output\FileOutput\VideoOutput.cs" />
-    <Compile Include="Output\IBitmapDestination.cs" />
-    <Compile Include="Output\IColoredGray2Destination.cs" />
-    <Compile Include="Output\IGray2Destination.cs" />
-    <Compile Include="Output\IFixedSizeDestination.cs" />
-    <Compile Include="Output\IColoredGray4Destination.cs" />
-    <Compile Include="Output\IResizableDestination.cs" />
-    <Compile Include="Output\IRgb24Destination.cs" />
-    <Compile Include="Common\BinaryReaderExtensions.cs" />
-    <Compile Include="Converter\Colorize\Mapping.cs" />
-    <Compile Include="Converter\Colorize\Palette.cs" />
-    <Compile Include="Converter\Colorize\Coloring.cs" />
-    <Compile Include="Output\Network\BrowserStream.cs" />
-    <Compile Include="Output\Network\VpdbStream.cs" />
-    <Compile Include="Output\Virtual\AlphaNumeric\AlphaNumericResources.cs" />
-    <None Include="Output\Virtual\AlphaNumeric\README.md" />
-    <Compile Include="Output\Virtual\AlphaNumeric\DisplaySetting.cs" />
-    <Compile Include="Output\Virtual\AlphaNumeric\RasterizeDimensions.cs" />
-    <Compile Include="Output\Virtual\AlphaNumeric\RasterizeLayerStyle.cs" />
-    <Compile Include="Output\Virtual\AlphaNumeric\RasterizeStyle.cs" />
-    <Compile Include="Output\Virtual\AlphaNumeric\VirtualAlphanumericDestination.cs" />
-    <Compile Include="Output\Virtual\AlphaNumeric\AlphanumericControl.xaml.cs">
-      <DependentUpon>AlphanumericControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Output\Virtual\Dmd\OpenGLControlExt.xaml.cs">
-      <DependentUpon>OpenGLControlExt.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Output\Virtual\Dmd\SliderValueSetting.xaml.cs">
-      <DependentUpon>SliderValueSetting.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Output\Virtual\Dmd\DmdPaddingSetting.xaml.cs">
-      <DependentUpon>DmdPaddingSetting.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Output\Virtual\Dmd\DmdSettings.xaml.cs">
-      <DependentUpon>DmdSettings.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Output\Virtual\Dmd\DmdStyle.cs" />
-    <Compile Include="Output\Virtual\Dmd\Helper.cs" />
-    <Compile Include="Output\Virtual\Dmd\VirtualDmdControl.xaml.cs">
-      <DependentUpon>VirtualDmdControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="RawRenderer.cs" />
-    <Compile Include="Input\FileSystem\RawSource.cs" />
-    <Compile Include="Input\ISource.cs" />
-    <Compile Include="Input\IRawSource.cs" />
-    <Compile Include="Input\PinballFX\PinballFXGrabber.cs" />
-    <Compile Include="Input\ScreenGrabber\GrabberWindow.xaml.cs">
-      <DependentUpon>GrabberWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Input\TPAGrabber\TPAGrabber.cs" />
-    <Compile Include="IRenderer.cs" />
-    <Compile Include="Output\BufferRenderer.cs" />
-    <Compile Include="Output\FileOutput\BitmapOutput.cs" />
-    <Compile Include="Output\IGray4Destination.cs" />
-    <Compile Include="Output\IRawOutput.cs" />
-    <Compile Include="Output\Pin2Dmd\Pin2Dmd.cs" />
-    <Compile Include="Output\PinDmd1\PinDmd1.cs" />
-    <Compile Include="Output\PinDmd2\PinDmd2.cs" />
-    <Compile Include="Output\IDestination.cs" />
-    <Compile Include="Input\ScreenGrabber\NativeCapture.cs" />
-    <Compile Include="Output\PinDmd3\PinDmd3.cs" />
-    <Compile Include="Processor\GridProcessor.cs" />
-    <Compile Include="Processor\AbstractProcessor.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Input\ScreenGrabber\ScreenGrabber.cs" />
-    <Compile Include="RenderGraph.cs" />
-    <Compile Include="RenderGraphCollection.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <EmbeddedResource Include="Output\Virtual\Dmd\Dmd.frag" />
-    <EmbeddedResource Include="Output\Virtual\Dmd\Blur.vert" />
-    <EmbeddedResource Include="Output\Virtual\Dmd\Blur.frag" />
-    <EmbeddedResource Include="Output\Virtual\Dmd\Convert.frag" />
-    <EmbeddedResource Include="Output\Virtual\Dmd\Convert.vert" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Output\Virtual\Dmd\README.md" />
-    <Resource Include="Output\Virtual\Dmd\preview-128x16-tint.png" />
-    <Resource Include="Output\Virtual\Dmd\preview-128x32-tint.png" />
-    <Resource Include="Output\Virtual\Dmd\preview-192x64-tint.png" />
-    <Resource Include="Output\Virtual\Dmd\preview-32x8-tint.png" />
-    <Resource Include="Output\Virtual\Dmd\preview-128x16-mono.png" />
-    <Resource Include="Output\Virtual\Dmd\preview-128x32-mono.png" />
-    <Resource Include="Output\Virtual\Dmd\preview-192x64-mono.png" />
-    <Resource Include="Output\Virtual\Dmd\preview-32x8-mono.png" />
-    <EmbeddedResource Include="Costura64\libSkiaSharp.dll" />
-    <EmbeddedResource Include="Output\Virtual\Dmd\Dmd.vert" />
-    <Resource Include="Output\Virtual\Dmd\preview-128x32-color.png" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\08-center-top.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\09-center-bottom.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\full-10.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\00-top.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\01-top-right.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\02-bottom-right.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\03-bottom.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\04-bottom-left.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\05-top-left.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\06-middle.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\07-comma.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\full.svg" />
-    <EmbeddedResource Include="Costura64\ftd2xx.dll" />
-    <EmbeddedResource Include="Costura32\libSkiaSharp.dll" />
-    <Content Include="FodyWeavers.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <EmbeddedResource Include="Costura32\ftd2xx.dll" />
-    <Content Include="FTD2XX_NET.XML" />
-    <EmbeddedResource Include="Output\Network\www\index.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Output\Network\www\main.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Output\Network\www\reconnecting-websocket.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Output\Network\www\jbinary.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Output\Network\www\jdataview.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Output\Network\www\composer.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Output\Network\www\shaders.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Output\Network\www\three.min.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Output\Network\www\styles.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\00-top.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\01-top-right.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\02-bottom-right.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\03-bottom.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\04-bottom-left.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\05-top-left.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\06-middle-left.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\07-comma.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\08-diag-top-left.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\09-center-top.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\10-diag-top-right.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\11-middle-right.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\12-diag-bottom-right.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\13-center-bottom.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\14-diag-bottom-left.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\15-dot.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\full.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\00-top.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\01-top-right.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\02-bottom-right.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\03-bottom.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\04-bottom-left.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\05-top-left.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\06-middle-left.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\07-comma.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\08-diag-top-left.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\09-center-top.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\10-diag-top-right.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\11-middle-right.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\12-diag-bottom-right.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\13-center-bottom.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\14-diag-bottom-left.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\15-dot.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\full.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\00-top.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\01-top-right.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\02-bottom-right.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\03-bottom.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\04-bottom-left.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\05-top-left.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\06-middle.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\07-comma.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\08-center-top.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\09-center-bottom.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\full-10.svg" />
-    <EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\full.svg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Output\Virtual\AlphaNumeric\AlphaNumericLayerSetting.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Output\Virtual\AlphaNumeric\AlphaNumericSettings.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Common\VirtualAlphaNumericDisplay.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Common\VirtualDmd.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Input\ScreenGrabber\GrabberWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Output\Virtual\AlphaNumeric\AlphanumericControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Output\Virtual\Dmd\OpenGLControlExt.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Output\Virtual\Dmd\SliderValueSetting.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Output\Virtual\Dmd\DmdPaddingSetting.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Output\Virtual\Dmd\DmdSettings.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Output\Virtual\Dmd\VirtualDmdControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ProPinballBridge\ProPinballBridge.vcxproj">
-      <Project>{668cdaaf-49e4-4b01-bd9d-37d5ae89ddac}</Project>
-      <Name>ProPinballBridge</Name>
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-  </PropertyGroup>
-  <Import Project="..\packages\Fody.1.29.4\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.29.4\build\dotnet\Fody.targets'))" />
-    <Error Condition="!Exists('..\packages\SkiaSharp.1.68.0-preview28\build\net45\SkiaSharp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SkiaSharp.1.68.0-preview28\build\net45\SkiaSharp.targets'))" />
-  </Target>
-  <Import Project="..\packages\SkiaSharp.1.68.0-preview28\build\net45\SkiaSharp.targets" Condition="Exists('..\packages\SkiaSharp.1.68.0-preview28\build\net45\SkiaSharp.targets')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<Platforms>x86;x64</Platforms>
+		<OutputType>Library</OutputType>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<AssemblyName>LibDmd</AssemblyName>
+		<UseWPF>true</UseWPF>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<SatelliteResourceLanguages>ru;en-US</SatelliteResourceLanguages>
+		<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+		<ErrorReport>prompt</ErrorReport>
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>full</DebugType>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+		<DefineConstants>TRACE;PLATFORM_X86</DefineConstants>
+		<Optimize>true</Optimize>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release - Coloring Disabled|x86'">
+		<DefineConstants>TRACE;PLATFORM_X86</DefineConstants>
+		<Optimize>true</Optimize>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+		<DefineConstants>TRACE;PLATFORM_X64</DefineConstants>
+		<Optimize>true</Optimize>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release - Coloring Disabled|x64'">
+		<DefineConstants>TRACE;PLATFORM_X64</DefineConstants>
+		<Optimize>true</Optimize>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\ProPinballBridge\ProPinballBridge.vcxproj" />
+		<PackageReference Include="Costura.Fody" Version="5.3.0" PrivateAssets="all" />
+		<PackageReference Include="Fody" Version="6.5.1" PrivateAssets="all" />
+		<PackageReference Include="EngineIoClientDotNet" Version="0.9.22.0" />
+		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.1.0" />
+		<PackageReference Include="FTD2XX.Net" Version="1.0.14" />
+		<PackageReference Include="ini-parser-netstandard" Version="2.5.2" />
+		<PackageReference Include="LibUsbDotNet" Version="2.2.29" />
+		<PackageReference Include="MediaTypeMap.Core" Version="2.3.3" />
+		<PackageReference Include="Mindscape.Raygun4Net.NetCore" Version="6.3.1" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="NLog" Version="4.7.10" />
+		<!-- <PackageReference Include="SharpAvi.NetStandard" Version="2.1.2" /> The netstandard version is missing MJPEG encoder -->
+		<PackageReference Include="SharpAvi" Version="2.1.2" />
+		<PackageReference Include="SharpGL.WPF" Version="3.1.1" />
+		<PackageReference Include="SkiaSharp.Svg" Version="1.60.0" />
+		<PackageReference Include="SkiaSharp.Views.WPF" Version="2.80.2" />
+		<PackageReference Include="SocketIoClientDotNet" Version="0.9.13" />
+		<PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+		<PackageReference Include="System.IO.Ports" Version="5.0.1" />
+		<PackageReference Include="System.Reactive" Version="5.0.0" />
+		<PackageReference Include="WebSocket4Net" Version="0.15.2" />
+		<!-- <PackageReference Include="WebSocketSharp" Version="1.0.3-rc10" /> Replaced by net standard 2.0 implementation below -->
+		<PackageReference Include="websocketsharp.core" Version="1.0.0" />
+		<PackageReference Include="WriteableBitmapEx" Version="1.6.7" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="..\VersionAssemblyInfo.cs" Link="Properties\VersionAssemblyInfo.cs" />
+		<Content Include="Output\Virtual\Dmd\README.md" />
+		<Content Include="FTD2XX_NET.XML" />
+		<Content Include="FodyWeavers.xml" SubType="Designer" />
+		<EmbeddedResource Include="Costura64\ftd2xx.dll" />
+		<EmbeddedResource Include="Costura64\libSkiaSharp.dll" />
+		<EmbeddedResource Include="Costura32\ftd2xx.dll" />
+		<EmbeddedResource Include="Costura32\libSkiaSharp.dll" />
+		<Resource Include="Output\Virtual\Dmd\preview-32x8-mono.png" />
+		<Resource Include="Output\Virtual\Dmd\preview-32x8-tint.png" />
+		<Resource Include="Output\Virtual\Dmd\preview-128x16-tint.png" />
+		<Resource Include="Output\Virtual\Dmd\preview-128x16-mono.png" />
+		<Resource Include="Output\Virtual\Dmd\preview-128x32-tint.png" />
+		<Resource Include="Output\Virtual\Dmd\preview-128x32-mono.png" />
+		<Resource Include="Output\Virtual\Dmd\preview-128x32-color.png" />
+		<Resource Include="Output\Virtual\Dmd\preview-192x64-tint.png" />
+		<Resource Include="Output\Virtual\Dmd\preview-192x64-mono.png" />
+		<EmbeddedResource Include="Output\Virtual\Dmd\Dmd.vert" />
+		<EmbeddedResource Include="Output\Virtual\Dmd\Dmd.frag" />
+		<EmbeddedResource Include="Output\Virtual\Dmd\Blur.vert" />
+		<EmbeddedResource Include="Output\Virtual\Dmd\Blur.frag" />
+		<EmbeddedResource Include="Output\Virtual\Dmd\Convert.frag" />
+		<EmbeddedResource Include="Output\Virtual\Dmd\Convert.vert" />
+		<EmbeddedResource Include="Output\Network\www\index.html" CopyToOutputDirectory="PreserveNewest" />
+		<EmbeddedResource Include="Output\Network\www\main.js" CopyToOutputDirectory="PreserveNewest" />
+		<EmbeddedResource Include="Output\Network\www\reconnecting-websocket.js" CopyToOutputDirectory="PreserveNewest" />
+		<EmbeddedResource Include="Output\Network\www\jbinary.js" CopyToOutputDirectory="PreserveNewest" />
+		<EmbeddedResource Include="Output\Network\www\jdataview.js" CopyToOutputDirectory="PreserveNewest" />
+		<EmbeddedResource Include="Output\Network\www\composer.js" CopyToOutputDirectory="PreserveNewest" />
+		<EmbeddedResource Include="Output\Network\www\shaders.js" CopyToOutputDirectory="PreserveNewest" />
+		<EmbeddedResource Include="Output\Network\www\three.min.js" CopyToOutputDirectory="PreserveNewest" />
+		<EmbeddedResource Include="Output\Network\www\styles.css" CopyToOutputDirectory="PreserveNewest" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\00-top.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\01-top-right.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\02-bottom-right.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\03-bottom.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\04-bottom-left.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\05-top-left.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\06-middle-left.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\07-comma.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\08-diag-top-left.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\09-center-top.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\10-diag-top-right.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\11-middle-right.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\12-diag-bottom-right.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\13-center-bottom.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\14-diag-bottom-left.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\15-dot.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-bold\full.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\00-top.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\01-top-right.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\02-bottom-right.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\03-bottom.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\04-bottom-left.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\05-top-left.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\06-middle-left.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\07-comma.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\08-diag-top-left.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\09-center-top.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\10-diag-top-right.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\11-middle-right.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\12-diag-bottom-right.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\13-center-bottom.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\14-diag-bottom-left.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\15-dot.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\alphanum-thin\full.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\00-top.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\01-top-right.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\02-bottom-right.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\03-bottom.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\04-bottom-left.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\05-top-left.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\06-middle.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\07-comma.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\08-center-top.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\09-center-bottom.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\full-10.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-bold\full.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\08-center-top.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\09-center-bottom.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\full-10.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\00-top.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\01-top-right.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\02-bottom-right.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\03-bottom.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\04-bottom-left.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\05-top-left.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\06-middle.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\07-comma.svg" />
+		<EmbeddedResource Include="Output\Virtual\AlphaNumeric\numeric-thin\full.svg" />
+	</ItemGroup>
 </Project>

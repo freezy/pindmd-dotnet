@@ -1,11 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Weavers>
-    <Costura>
-        <Unmanaged32Assemblies>
-        </Unmanaged32Assemblies>
-        <Unmanaged64Assemblies>
-            ProPinballBridge
-            ftd2xx
-        </Unmanaged64Assemblies>
-    </Costura>
+<Weavers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="FodyWeavers.xsd">
+	<Costura>
+		<Unmanaged32Assemblies>
+			ProPinballBridge
+			ftd2xx
+		</Unmanaged32Assemblies>
+		<Unmanaged64Assemblies>
+			ProPinballBridge
+			ftd2xx
+		</Unmanaged64Assemblies>
+	</Costura>
 </Weavers>

@@ -97,7 +97,7 @@
   </Target>
   <Target Name="BeforeBuild">
     <!-- Read "internal" version from assembly -->
-    <GetAssemblyIdentity AssemblyFiles="..\Console\bin\$(Platform)\$(Configuration)\dmdext.exe">
+    <GetAssemblyIdentity AssemblyFiles="..\Console\bin\$(Platform)\$(Configuration)\netcoreapp3.1\dmdext.dll">
       <Output TaskParameter="Assemblies" ItemName="AssemblyVersion" />
     </GetAssemblyIdentity>
     <!-- Set internal version as build version -->
